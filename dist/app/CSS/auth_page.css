@@ -6,10 +6,12 @@
     height: 100vh;
 }
 
-.login-conteiner {
+.login-cadastro-conteiner {
     display: flex;
     flex-direction: column;
     gap: 30px;
+    width: 500px;
+    padding: 10px;
 }
 
 .login-text-box {
@@ -18,7 +20,7 @@
     align-items: center;
 }
 
-#login-form {
+#auth-form {
     display: flex;
     flex-direction: column;
     gap: 10px;

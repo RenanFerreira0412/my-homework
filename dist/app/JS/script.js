@@ -4,6 +4,7 @@ $(document).ready(function () {
         "login": { email: '', senha: '' },
         "cadastro": { name: '', email: '', senha: '', confirmSenha: '' },
         "LOGIN": 'NaoLogado',
+        "autenticacao": 'Entrar',
         "btnForm": 'Salvar',
         "errorMessage": '',
         Activities: [], // Vetor que armazena as atividades criadas
@@ -103,6 +104,14 @@ $(document).ready(function () {
                 } else {
                     alert('Preencha todos os campos!')
                 }
+            },
+
+            paginaCadastro: function () {
+                this.autenticacao = 'Cadastrar';
+            },
+
+            paginaLogin: function () {
+                this.autenticacao = 'Entrar';
             },
 
             signIn: function () {

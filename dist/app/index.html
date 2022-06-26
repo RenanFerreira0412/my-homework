@@ -35,13 +35,13 @@
     <!--Página de autenticação-->
     <div v-if="LOGIN === 'NaoLogado'">
       <div class="auth-conteiner">
-        <div class="login-conteiner">
+        <div class="login-cadastro-conteiner" v-if="autenticacao === 'Entrar'">
           <div class="login-text-box">
-            <p>My Homepage Login - Renan Ferreira</p>
+            <p>My Homepage Login</p>
             <p>Olá, preencha suas informações para poder acessar a sua conta</p>
           </div>
 
-          <form id="login-form">
+          <form id="auth-form">
             <div class="form-group">
               <label for="email">Email</label>
               <input type="email" id="email" v-model="login.email" placeholder="Digite seu email" autocomplete="email">
@@ -73,13 +73,46 @@
 
             <div class="auth-cadastro-option">
               <p>Não possui nenhuma conta?</p>
-              <button>Cadastre-se</button>
+              <button @click="paginaCadastro">Cadastre-se</button>
             </div>
           </div>
         </div>
 
-        <div class="cadastro-container">
+        <div class="login-cadastro-conteiner" v-if="autenticacao === 'Cadastrar'">
+          <p>Cadastre-se</p>
 
+          <form id="auth-form">
+            <div class="form-group">
+              <label for="name">Nome</label>
+              <input type="text" id="name" v-model="cadastro.name" placeholder="Digite seu nome"
+                autocomplete="username">
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="cadastroEmail" id="cadastroEmail" v-model="cadastro.email" placeholder="Digite seu email"
+                autocomplete="email">
+            </div>
+
+            <div class="form-group">
+              <label for="cadastroSenha">Senha</label>
+              <input type="password" id="cadastroSenha" v-model="cadastro.senha" placeholder="Digite sua senha"
+                autocomplete="current-password">
+            </div>
+
+            <div class="form-group">
+              <label for="confirmSenha">Confirmar senha</label>
+              <input type="password" id="confirmSenha" v-model="cadastro.confirmSenha"
+                placeholder="Digite novamente sua senha" autocomplete="current-password">
+            </div>
+
+            <button type="button" class="login-btn">Cadastrar</button>
+          </form>
+
+          <div class="auth-cadastro-option">
+            <p>Já possui cadastro?</p>
+            <button @click="paginaLogin">Entrar</button>
+          </div>
         </div>
 
       </div>
