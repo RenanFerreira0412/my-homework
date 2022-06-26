@@ -66,4 +66,7 @@ node_modules/
 .env
 
 # Pasta com as fontes do projeto
-.dist/app/FONTS
+dist/app/FONTS
+
+# Página 404
+404.html
