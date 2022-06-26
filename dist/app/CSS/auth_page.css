@@ -1,0 +1,58 @@
+.auth-conteiner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-conteiner {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.login-text-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+hr.hr-text {
+    border: none;
+    height: 1px;
+    background: #999;
+}
+
+.auth-options-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.auth-options {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+.auth-cadastro-option {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 10px;
+}

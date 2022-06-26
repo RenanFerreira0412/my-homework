@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Homework</title>
+
+  <!-- Jquery e Vue -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.8/vue.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://netdna.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://netdna.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="CSS/fonts.css">
+  <link rel="stylesheet" href="CSS/form_style.css">
+  <link rel="stylesheet" href="CSS/list_style.css">
+  <link rel="stylesheet" href="CSS/error_style.css">
+  <link rel="stylesheet" href="CSS/auth_page.css">
+
+  <!--Fontawesome-->
+  <script src="https://kit.fontawesome.com/e8cfddc4ed.js" crossorigin="anonymous"></script>
+
+  <!--Ionicons-->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</head>
+
+<body>
+
+  <div id="app">
+    <!--Página de autenticação-->
+    <div v-if="LOGIN === 'NaoLogado'">
+      <div class="auth-conteiner">
+        <div class="login-conteiner">
+          <div class="login-text-box">
+            <p>My Homepage Login</p>
+            <p>Olá, preencha suas informações para poder acessar a sua conta</p>
+          </div>
+
+          <form id="login-form">
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" v-model="login.email" placeholder="Digite seu email" autocomplete="email">
+            </div>
+
+            <div class="form-group">
+              <label for="senha">Senha</label>
+              <input type="password" id="senha" v-model="login.senha" placeholder="Digite sua senha"
+                autocomplete="current-password">
+            </div>
+
+            <button type="button" @click="signIn" class="login-btn">Entrar</button>
+          </form>
+
+          <hr class="hr-text">
+
+          <div class="auth-options-container">
+            <div class="auth-options">
+              <button>
+                <i class="fa-brands fa-google"></i>
+                Google
+              </button>
+
+              <button>
+                <i class="fa-solid fa-user-secret"></i>
+                Anônimo
+              </button>
+            </div>
+
+            <div class="auth-cadastro-option">
+              <p>Não possui nenhuma conta?</p>
+              <button>Cadastre-se</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cadastro-container">
+
+        </div>
+
+      </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                HOUVE UM ERRO
+              </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p v-text="errorMessage">{{errorMessage}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Página inicial do app-->
+    <div v-else>
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <a class="nav-item nav-link active" id="nav-form-tab" data-toggle="tab" href="#nav-form" role="tab"
+            aria-controls="nav-form" aria-selected="true">Homepage</a>
+          <a class="nav-item nav-link" id="nav-form-tab"><i @click="signOut"
+              class="fa-solid fa-arrow-right-from-bracket"></i></a>
+        </div>
+      </nav>
+      <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-form" role="tabpanel" aria-labelledby="nav-form-tab">
+
+          <div class="homepage-content">
+            <table class="table table-sm table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Título</th>
+                  <th scope="col">Disciplina</th>
+                  <th scope="col">Data de Entrega</th>
+                  <th scope="col">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(activity, id) in Activities">
+                  <td>{{ activity.title }}</td>
+                  <td>{{ activity.subject.name }}</td>
+                  <td>{{ activity.date | formataData }}</td>
+                  <td>
+                    <i v-on:click="editActivity(id)" class="fa-solid fa-pen-to-square"></i>
+                    <i v-on:click="deleteActivity(activity.key)" class="fa-solid fa-trash-can"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <fieldset class="fieldset-border">
+              <legend class="legend-style">Cadastro de Atividades</legend>
+
+              <div v-if="errors.length" class="error-card">
+                <b>Por favor, corrija o(s) seguinte(s) erro(s):</b>
+
+                <div class="error-message">
+                  <i id="error-icon" class="fa-solid fa-circle-exclamation"></i>
+
+                  <div>
+                    <p v-for="error in errors">- {{ error }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <form id="formulario">
+                <div class="form-field">
+                  <label for="inputTitle">Título</label>
+                  <input type="text" v-model="nova_atividade.title" id="inputTitle" placeholder="Título da atividade">
+
+                </div>
+
+                <div class="form-field">
+                  <label for="inputDate">Data de Entrega</label>
+                  <input type="date" v-model="nova_atividade.data_entrega" id="inputDate">
+                </div>
+
+                <div class="form-field">
+                  <label for="subject">Disciplina</label>
+                  <select id="subject" v-model="nova_atividade.subject">
+                    <option disabled value="">Escolha um item</option>
+                    <option v-for="subject in Subjects" v-bind:value="subject">
+                      {{ subject.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="ActivityTopics">Tópicos da Atividade</label>
+                  <textarea id="ActivityTopics" v-model="nova_atividade.topics" rows="3"
+                    placeholder="Descreva os tópicos dessa atividade"></textarea>
+                </div>
+
+                <div class="form-buttons">
+                  <button type="button" @click="cleanForm" class="btn-limpar">Limpar Formulário
+                  </button>
+                  <button type="button" @click="createActivity" v-if="btnForm === 'Salvar'"
+                    class="btn-salvar">Salvar</button>
+                  <button type="button" @click="updateActivity" v-if="btnForm === 'Editar'"
+                    class="btn-salvar">Editar</button>
+                </div>
+              </form>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Bibliotecas do Firebase e do Cloud Firestore-->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+
+  <script src="JS/firebase.js"></script>
+  <script src="JS/models.js"></script>
+  <script type="text/javascript" src="JS/script.js"></script>
+</body>
+
+</html>

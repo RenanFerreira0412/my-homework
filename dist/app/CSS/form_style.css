@@ -1,0 +1,111 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+.homepage-content {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 20px;
+}
+
+#formulario {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+}
+
+.fieldset-border {
+    border: 1px groove #ddd !important;
+    padding: 10px;
+    box-shadow: 0px 0px 0px 0px #000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.legend-style {
+    font-size: 1.2em;
+    font-weight: bold;
+    width: auto;
+    padding: 0 10px;
+    border-bottom: none;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+}
+
+.form-field input,
+select {
+    height: 40px;
+}
+
+.form-field input,
+textarea,
+select {
+    border: none;
+    border-radius: 2px;
+    background-color: rgb(230, 227, 227);
+    padding: 6px;
+}
+
+.form-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.form-buttons button {
+    border: none;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+}
+
+.form-field input:hover,
+textarea:hover,
+select:hover {
+    background-color: rgb(206, 198, 188);
+}
+
+.btn-salvar {
+    padding: 8px;
+    width: 100px;
+    border-radius: 10px;
+    background-color: rgb(32, 32, 32);
+    color: white;
+}
+
+.btn-limpar {
+    background: white;
+    font-size: 15px;
+}
+
+.error-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #ffe2e6;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.error-message {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+}
+
+#error-icon {
+    font-size: 40px;
+    color: #DC143C;
+}

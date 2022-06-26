@@ -1,0 +1,44 @@
+#listActivity {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    gap: 12px;
+}
+
+.activity-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background-color: rgb(236, 235, 235);
+}
+
+.card-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.middle-content {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.card-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.card-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
