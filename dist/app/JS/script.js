@@ -22,11 +22,6 @@ $(document).ready(function () {
         return dia + "/" + mes + "/" + ano;
     });
 
-    // // global
-    // Vue.use(window.vuelidate.default);
-
-    // const { required, maxLength } = window.validators
-
 
     var vm = new Vue({
         el: '#app',
