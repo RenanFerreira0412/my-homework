@@ -1,4 +1,4 @@
-.auth-conteiner {
+.main-box {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -6,55 +6,41 @@
     height: 100vh;
 }
 
-.login-cadastro-conteiner {
+.auth-box {
     display: flex;
     flex-direction: column;
     gap: 30px;
-    width: 500px;
-    padding: 10px;
-}
-
-.login-text-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 0 1em #b5b5b6;
 }
 
 #auth-form {
     display: flex;
     flex-direction: column;
+    gap: 20px;
+}
+
+.box-title {
+    display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-hr.hr-text {
+.btn-auth {
+    padding: 10px;
+    text-transform: uppercase;
+    border-radius: 5px;
     border: none;
-    height: 1px;
-    background: #999;
+    cursor: pointer;
+    color: white;
+    background-color: #1f1f1f;
 }
 
-.auth-options-container {
+.loading-icon {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 20px;
-}
-
-.auth-options {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
-}
-
-.auth-cadastro-option {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    gap: 10px;
+    height: 100vh;
 }

@@ -1,11 +1,10 @@
 $(document).ready(function () {
     var dados = {
-        "nova_atividade": { documentID: '', title: '', data_entrega: '', topics: '', subject: '' },
+        "nova_atividade": { indice: '', documentID: '', title: '', data_entrega: '', topics: '', subject: '' },
         "login": { email: '', senha: '' },
         "cadastro": { name: '', email: '', senha: '', confirmSenha: '' },
-        "LOGIN": 'NaoLogado',
+        "isLogin": null,
         "autenticacao": 'Entrar',
-        "btnForm": 'Salvar',
         "errorMessage": '',
         Activities: [], // Vetor que armazena as atividades criadas
         Subjects: [], // Vetor que armazena os documentos da coleção disciplinas
@@ -33,10 +32,10 @@ $(document).ready(function () {
                     var uid = user.uid;
                     console.log(uid)
                     //Usuário logado no app
-                    this.LOGIN = null;
+                    this.isLogin = false;
                 } else {
                     //Caso o usuário não esteja logado
-                    this.LOGIN = 'NaoLogado';
+                    this.isLogin = true;
                 }
             });
 
@@ -133,6 +132,9 @@ $(document).ready(function () {
                             console.log(errorMessage);
                         });
                 }
+
+                this.login.email = ''
+                this.login.senha = ''
             },
 
             signOut: function () {
@@ -149,11 +151,13 @@ $(document).ready(function () {
 
             verificaSignInErros: function (errorMessage) {
                 if (errorMessage == 'auth/user-not-found' && errorMessage == 'auth/wrong-password') {
-                    this.errorMessage = 'E-mail ou senha inválidos.'
-                    $('#exampleModalCenter').modal('show')
+                    alert('E-mail ou senha inválidos.')
+                    //this.errorMessage = 'E-mail ou senha inválidos.'
+                    //$('#exampleModalCenter').modal('show')
                 } else if (errorMessage == 'auth/user-not-found' || errorMessage == 'auth/wrong-password') {
-                    this.errorMessage = 'E-mail ou senha inválidos.'
-                    $('#exampleModalCenter').modal('show')
+                    alert('E-mail ou senha inválidos.')
+                    //this.errorMessage = 'E-mail ou senha inválidos.'
+                    //$('#exampleModalCenter').modal('show')
                 }
             },
 
@@ -170,22 +174,47 @@ $(document).ready(function () {
                 var data_entrega = this.nova_atividade.data_entrega.trim();
                 var topics = this.nova_atividade.topics;
                 var subject = this.nova_atividade.subject;
+                var indice = this.nova_atividade.indice;
+                var docId = this.nova_atividade.documentID;
 
                 if (this.checkForm()) {
-                    // Add a new document with a generated id.
-                    var newActivityRef = databaseRef
-                        .collection("ATIVIDADES")
-                        .doc()
-                        .withConverter(activityConverter);
+                    if (isNaN(parseInt(indice))) {
+                        // Add a new document with a generated id.
+                        var newActivityRef = databaseRef
+                            .collection("ATIVIDADES")
+                            .doc()
+                            .withConverter(activityConverter);
 
-                    newActivityRef.set(new Activity(
-                        title,
-                        data_entrega,
-                        topics,
-                        subject,
-                        newActivityRef.id));
+                        newActivityRef.set(new Activity(
+                            title,
+                            data_entrega,
+                            topics,
+                            subject,
+                            newActivityRef.id));
 
-                    alert('Nova Atividade Cadastrada !');
+                        alert('Nova Atividade Cadastrada !');
+                    } else {
+
+                        var activityRef = databaseRef
+                            .collection("ATIVIDADES")
+                            .doc(docId)
+
+                        activityRef.update({
+                            title: title,
+                            date: data_entrega,
+                            topics: topics,
+                            subject: subject,
+                        })
+                            .then(() => {
+                                console.log("Document successfully updated!");
+                            })
+                            .catch((error) => {
+                                // The document probably doesn't exist.
+                                console.error("Error updating document: ", error);
+                            });
+
+                        alert('Atividade Alterada !');
+                    }
 
                     //Chama o função que limpa o formulário
                     this.cleanForm();
@@ -193,51 +222,12 @@ $(document).ready(function () {
             },
 
             editActivity: function (param_index) {
+                this.nova_atividade.indice = param_index
                 this.nova_atividade.title = this.Activities[param_index].title;
                 this.nova_atividade.data_entrega = this.Activities[param_index].date;
                 this.nova_atividade.subject = this.Activities[param_index].subject;
                 this.nova_atividade.topics = this.Activities[param_index].topics;
                 this.nova_atividade.documentID = this.Activities[param_index].key;
-
-                //Oculta o botão que cria uma nova atividade
-                this.btnForm = "Editar"
-            },
-
-            updateActivity: function () {
-                var docId = this.nova_atividade.documentID;
-                var title = this.nova_atividade.title;
-                var data_entrega = this.nova_atividade.data_entrega.trim();
-                var topics = this.nova_atividade.topics;
-                var subject = this.nova_atividade.subject;
-
-                console.log(docId)
-
-                if (this.checkForm()) {
-
-                    var activityRef = databaseRef
-                        .collection("ATIVIDADES")
-                        .doc(docId)
-
-                    activityRef.update({
-                        title: title,
-                        date: data_entrega,
-                        topics: topics,
-                        subject: subject,
-                    })
-                        .then(() => {
-                            console.log("Document successfully updated!");
-                        })
-                        .catch((error) => {
-                            // The document probably doesn't exist.
-                            console.error("Error updating document: ", error);
-                        });
-
-                    alert('Atividade Alterada !');
-
-                    //Chama o função que limpa o formulário
-                    this.cleanForm();
-
-                }
             },
 
             deleteActivity: function (documentID) {
@@ -248,7 +238,6 @@ $(document).ready(function () {
                         console.error("Error removing document: ", error);
                     });
                 }
-
             },
 
             cleanForm: function () {
@@ -257,13 +246,9 @@ $(document).ready(function () {
                 this.nova_atividade.data_entrega = '';
                 this.nova_atividade.topics = ''
                 this.nova_atividade.subject = ''
-                this.errors = []
-
-                //Oculta o botão que edita uma nova atividade
-                this.btnForm = "Salvar"
+                this.nova_atividade.indice = ''
+                this.errors = [];
             }
-
-
         }
     })
 });

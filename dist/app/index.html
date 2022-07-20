@@ -32,109 +32,30 @@
 <body>
 
   <div id="app">
-    <!--Página de autenticação-->
-    <div v-if="LOGIN === 'NaoLogado'">
-      <div class="auth-conteiner">
-        <div class="login-cadastro-conteiner" v-if="autenticacao === 'Entrar'">
-          <div class="login-text-box">
-            <p>My Homepage Login</p>
-            <p>Olá, preencha suas informações para poder acessar a sua conta</p>
-          </div>
-
-          <form id="auth-form">
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" v-model="login.email" placeholder="Digite seu email" autocomplete="email">
-            </div>
-
-            <div class="form-group">
-              <label for="senha">Senha</label>
-              <input type="password" id="senha" v-model="login.senha" placeholder="Digite sua senha"
-                autocomplete="current-password">
-            </div>
-
-            <button type="button" @click="signIn" class="login-btn">Entrar</button>
-          </form>
-
-          <hr class="hr-text">
-
-          <div class="auth-options-container">
-            <div class="auth-options">
-              <button>
-                <i class="fa-brands fa-google"></i>
-                Google
-              </button>
-
-              <button>
-                <i class="fa-solid fa-user-secret"></i>
-                Anônimo
-              </button>
-            </div>
-
-            <div class="auth-cadastro-option">
-              <p>Não possui nenhuma conta?</p>
-              <button @click="paginaCadastro">Cadastre-se</button>
-            </div>
-          </div>
+    <!--Tela de autenticação do usuário-->
+    <div class="main-box" v-if="isLogin">
+      <div class="auth-box">
+        <div class="box-title">
+          <p class="main-title">Bem Vindo!</p>
+          <p class="sub-title">Por Favor, preencha os seus dados para entrar na sua conta</p>
         </div>
 
-        <div class="login-cadastro-conteiner" v-if="autenticacao === 'Cadastrar'">
-          <p>Cadastre-se</p>
-
+        <div class="box-login">
           <form id="auth-form">
             <div class="form-group">
-              <label for="name">Nome</label>
-              <input type="text" id="name" v-model="cadastro.name" placeholder="Digite seu nome"
-                autocomplete="username">
+              <label for="nickname"> <i class="fa-solid fa-user"></i> Email</label>
+              <input type="email" id="nickname" v-model="login.email" placeholder="Email do usuário"
+                autocomplete="email" class="form-control">
             </div>
 
             <div class="form-group">
-              <label for="email">Email</label>
-              <input type="cadastroEmail" id="cadastroEmail" v-model="cadastro.email" placeholder="Digite seu email"
-                autocomplete="email">
+              <label for="senha"> <i class="fa-solid fa-lock"></i> Senha</label>
+              <input type="password" id="senha" v-model="login.senha" placeholder="Senha do usuário"
+                autocomplete="current-password" class="form-control">
             </div>
 
-            <div class="form-group">
-              <label for="cadastroSenha">Senha</label>
-              <input type="password" id="cadastroSenha" v-model="cadastro.senha" placeholder="Digite sua senha"
-                autocomplete="current-password">
-            </div>
-
-            <div class="form-group">
-              <label for="confirmSenha">Confirmar senha</label>
-              <input type="password" id="confirmSenha" v-model="cadastro.confirmSenha"
-                placeholder="Digite novamente sua senha" autocomplete="current-password">
-            </div>
-
-            <button type="button" class="login-btn">Cadastrar</button>
+            <button type="button" @click="signIn" class="btn-auth">Entrar</button>
           </form>
-
-          <div class="auth-cadastro-option">
-            <p>Já possui cadastro?</p>
-            <button @click="paginaLogin">Entrar</button>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Modal -->
-      <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLongTitle">
-                <i class="fa-solid fa-circle-exclamation"></i>
-                HOUVE UM ERRO
-              </h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <p v-text="errorMessage">{{errorMessage}}</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -221,10 +142,7 @@
                 <div class="form-buttons">
                   <button type="button" @click="cleanForm" class="btn-limpar">Limpar Formulário
                   </button>
-                  <button type="button" @click="createActivity" v-if="btnForm === 'Salvar'"
-                    class="btn-salvar">Salvar</button>
-                  <button type="button" @click="updateActivity" v-if="btnForm === 'Editar'"
-                    class="btn-salvar">Editar</button>
+                  <button type="button" @click="createActivity" class="btn-salvar">Salvar</button>
                 </div>
               </form>
             </fieldset>
