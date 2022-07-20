@@ -162,6 +162,8 @@ $(document).ready(function () {
 
                     //Chama o função que limpa o formulário
                     this.cleanForm();
+
+                    $('#nav-activity-tab').tab('show') // Navega para a página de Atividades
                 } else {
                     this.message = 'Preencha o formulário corretamente.';
                     this.showSnackbar();
@@ -175,6 +177,8 @@ $(document).ready(function () {
                 this.nova_atividade.subject = this.Activities[param_index].subject;
                 this.nova_atividade.topics = this.Activities[param_index].topics;
                 this.nova_atividade.documentID = this.Activities[param_index].key;
+
+                $('#nav-form-tab').tab('show') // Navega para o formulário  
             },
 
             deleteActivity: function (documentID) {

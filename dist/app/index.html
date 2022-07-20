@@ -102,7 +102,7 @@
               </div>
             </div>
 
-            <button type="button" @click="authBtn($v)" v-text="actionButton" class="btn-auth">Entrar</button>
+            <button type="button" @click="authBtn($v)" v-text="actionButton" class="btn btn-dark">Entrar</button>
           </form>
         </div>
       </div>
@@ -116,8 +116,10 @@
       <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
           <a class="nav-item nav-link active" id="nav-form-tab" data-toggle="tab" href="#nav-form" role="tab"
-            aria-controls="nav-form" aria-selected="true">Homepage</a>
-          <a class="nav-item nav-link" id="nav-form-tab"><i @click="signOut"
+            aria-controls="nav-form" aria-selected="true">Formulário</a>
+          <a class="nav-item nav-link" id="nav-activity-tab" data-toggle="tab" href="#nav-activity" role="tab"
+            aria-controls="nav-activity" aria-selected="false">Atividades</a>
+          <a class="nav-item nav-link" id="nav-logout-tab"><i @click="signOut"
               class="fa-solid fa-arrow-right-from-bracket"></i></a>
         </div>
       </nav>
@@ -125,32 +127,7 @@
         <div class="tab-pane fade show active" id="nav-form" role="tabpanel" aria-labelledby="nav-form-tab">
 
           <div class="homepage-content">
-            <div>
-              <table class="table table-sm table-hover">
-                <thead>
-                  <tr>
-                    <th scope="col">Título</th>
-                    <th scope="col">Disciplina</th>
-                    <th scope="col">Data de Entrega</th>
-                    <th scope="col">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(activity, id) in Activities">
-                    <td>{{ activity.title }}</td>
-                    <td>{{ activity.subject.name }}</td>
-                    <td>{{ activity.date | formataData }}</td>
-                    <td>
-                      <i v-on:click="editActivity(id)" class="fa-solid fa-pen-to-square"></i>
-                      <i v-on:click="deleteActivity(activity.key)" class="fa-solid fa-trash-can"></i>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <span v-if="Activities.length == 0">Sem atividade cadastrada ...</span>
-            </div>
-
+            
             <fieldset class="fieldset-border">
               <legend class="legend-style">Cadastro de Atividades</legend>
 
@@ -200,6 +177,27 @@
 
               <div v-bind="snackbarAttrs" v-text="message"></div>
             </fieldset>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="nav-activity" role="tabpanel" aria-labelledby="nav-activity-tab">
+          <div v-for="(activity, id) in Activities" class="card-activity">
+            <div class="card-main-content">
+              <div class="card-main-text">
+                <p class="card-title">{{ activity.title }}</p>
+                <p class="card-subject">{{ activity.subject.name }}</p>
+              </div>
+              
+              <div class="card-actions">
+                <i v-on:click="editActivity(id)" class="fa-solid fa-pen-to-square"></i>
+                <i v-on:click="deleteActivity(activity.key)" class="fa-solid fa-trash-can"></i>
+              </div>
+            </div>
+
+            <div class="card-footer-content">
+              <i class="fa-solid fa-flag"></i>
+              <p class="card-date">{{ activity.date | formataData }}</p>
+            </div>
           </div>
         </div>
       </div>

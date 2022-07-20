@@ -8,8 +8,7 @@
 .homepage-content {
     display: flex;
     flex-direction: column;
-    gap: 25px;
-    padding: 20px;
+    padding: 16px;
 }
 
 #formulario {
@@ -41,25 +40,4 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: baseline;
-}
-
-.error-card {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    background-color: #ffe2e6;
-    padding: 20px;
-    border-radius: 10px;
-}
-
-.error-message {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    align-items: center;
-}
-
-#error-icon {
-    font-size: 40px;
-    color: #DC143C;
 }

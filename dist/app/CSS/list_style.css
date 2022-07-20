@@ -1,37 +1,20 @@
-#listActivity {
+.card-activity {
     display: flex;
     flex-direction: column;
     padding: 16px;
-    gap: 12px;
+    margin: 16px;
+    gap: 5px;
+    border-radius: 15px;
+    box-shadow: 0 0 1em #b5b5b6;
 }
 
-.activity-card {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    background-color: rgb(236, 235, 235);
-}
-
-.card-header {
+.card-main-content {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
-.card-body {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.middle-content {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    gap: 6px;
-}
-
-.card-footer {
+.card-footer-content {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -40,5 +23,5 @@
 .card-actions {
     display: flex;
     flex-direction: row;
-    gap: 8px;
+    gap: 15px;
 }
