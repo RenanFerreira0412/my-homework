@@ -20,6 +20,11 @@
   <link rel="stylesheet" href="CSS/list_style.css">
   <link rel="stylesheet" href="CSS/error_style.css">
   <link rel="stylesheet" href="CSS/auth_page.css">
+  <link rel="stylesheet" href="CSS/snackbar.css">
+
+  <!--Vuelidate-->
+  <script src="https://unpkg.com/vuelidate@0.7.4/dist/vuelidate.min.js"></script>
+  <script src="https://unpkg.com/vuelidate@0.7.4/dist/validators.min.js"></script>
 
   <!--Fontawesome-->
   <script src="https://kit.fontawesome.com/e8cfddc4ed.js" crossorigin="anonymous"></script>
@@ -31,37 +36,83 @@
 
 <body>
 
-  <div id="app">
+  <div id="auth">
     <!--Tela de autenticação do usuário-->
-    <div class="main-box" v-if="isLogin">
+    <div class="main-box" v-if="authPage">
       <div class="auth-box">
         <div class="box-title">
           <p class="main-title">Bem Vindo!</p>
-          <p class="sub-title">Por Favor, preencha os seus dados para entrar na sua conta</p>
+          <p class="sub-title" v-text="titulo"></p>
         </div>
+
+        <p v-text="toggleButton" v-on:click="setFormAction(!isLogin)"></p>
 
         <div class="box-login">
           <form id="auth-form">
-            <div class="form-group">
-              <label for="nickname"> <i class="fa-solid fa-user"></i> Email</label>
-              <input type="email" id="nickname" v-model="login.email" placeholder="Email do usuário"
-                autocomplete="email" class="form-control">
+            <div v-if="isLogin">
+              <div class="form-group">
+                <label for="nickname"> <i class="fa-solid fa-envelope"></i> Email</label>
+                <input type="email" id="nickname" v-model="$v.login.email.$model" placeholder="Email do usuário"
+                  autocomplete="email" class="form-control">
+                <span class="errorMessage" v-if="!$v.login.email.required">Campo Obrigatório !</span>
+              </div>
+
+              <div class="form-group">
+                <label for="senha"> <i class="fa-solid fa-lock"></i> Senha</label>
+                <input type="password" id="senha" v-model="$v.login.senha.$model" placeholder="Senha do usuário"
+                  autocomplete="current-password" class="form-control">
+                <span class="errorMessage" v-if="!$v.login.senha.required">Campo Obrigatório !</span>
+                <span class="errorMessage" v-if="!$v.login.senha.minLength">A senha deve ter no mínimo {{
+                  $v.login.senha.$params.minLength.min }} caracteres.</span>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="senha"> <i class="fa-solid fa-lock"></i> Senha</label>
-              <input type="password" id="senha" v-model="login.senha" placeholder="Senha do usuário"
-                autocomplete="current-password" class="form-control">
+            <div v-else>
+              <div class="form-group">
+                <label for="username"> <i class="fa-solid fa-user"></i> Nome</label>
+                <input type="text" id="username" v-model.trim="$v.cadastro.name.$model" placeholder="Nome do usuário"
+                  autocomplete="username" class="form-control">
+                <span class="errorMessage" v-if="!$v.cadastro.name.required">Campo Obrigatório !</span>
+                <span class="errorMessage" v-if="!$v.cadastro.name.maxLength">O nome deve ter no máximo {{
+                  $v.cadastro.name.$params.maxLength.max }} caracteres.</span>
+              </div>
+
+              <div class="form-group">
+                <label for="email"> <i class="fa-solid fa-envelope"></i> Email</label>
+                <input type="email" id="email" v-model="$v.cadastro.email.$model" placeholder="Email do usuário"
+                  autocomplete="email" class="form-control">
+                <span class="errorMessage" v-if="!$v.cadastro.email.required">Campo Obrigatório !</span>
+              </div>
+
+              <div class="form-group">
+                <label for="senha"> <i class="fa-solid fa-lock"></i> Senha</label>
+                <input type="password" id="senha" v-model="$v.cadastro.senha.$model" placeholder="Senha do usuário"
+                  autocomplete="current-password" class="form-control">
+                <span class="errorMessage" v-if="!$v.cadastro.senha.required">Campo Obrigatório !</span>
+                <span class="errorMessage" v-if="!$v.cadastro.senha.minLength">A senha deve ter no mínimo {{
+                  $v.login.senha.$params.minLength.min }} caracteres.</span>
+              </div>
+
+              <div class="form-group">
+                <label for="confirmSenha"> <i class="fa-solid fa-lock"></i> Repita sua senha</label>
+                <input type="password" id="confirmSenha" v-model="$v.cadastro.confirmSenha.$model"
+                  placeholder="Repita sua senha novamente" autocomplete="current-password" class="form-control">
+                <span class="errorMessage" v-if="!$v.cadastro.confirmSenha.sameAsPassword">A senha deve ser a mesma
+                  digitada no campo acima.</span>
+              </div>
             </div>
 
-            <button type="button" @click="signIn" class="btn-auth">Entrar</button>
+            <button type="button" @click="authBtn($v)" v-text="actionButton" class="btn-auth">Entrar</button>
           </form>
         </div>
       </div>
     </div>
 
+  </div>
+
+  <div id="app">
     <!--Página inicial do app-->
-    <div v-else>
+    <div v-if="!authPage">
       <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
           <a class="nav-item nav-link active" id="nav-form-tab" data-toggle="tab" href="#nav-form" role="tab"
@@ -74,77 +125,80 @@
         <div class="tab-pane fade show active" id="nav-form" role="tabpanel" aria-labelledby="nav-form-tab">
 
           <div class="homepage-content">
-            <table class="table table-sm table-hover">
-              <thead>
-                <tr>
-                  <th scope="col">Título</th>
-                  <th scope="col">Disciplina</th>
-                  <th scope="col">Data de Entrega</th>
-                  <th scope="col">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(activity, id) in Activities">
-                  <td>{{ activity.title }}</td>
-                  <td>{{ activity.subject.name }}</td>
-                  <td>{{ activity.date | formataData }}</td>
-                  <td>
-                    <i v-on:click="editActivity(id)" class="fa-solid fa-pen-to-square"></i>
-                    <i v-on:click="deleteActivity(activity.key)" class="fa-solid fa-trash-can"></i>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div>
+              <table class="table table-sm table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">Título</th>
+                    <th scope="col">Disciplina</th>
+                    <th scope="col">Data de Entrega</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(activity, id) in Activities">
+                    <td>{{ activity.title }}</td>
+                    <td>{{ activity.subject.name }}</td>
+                    <td>{{ activity.date | formataData }}</td>
+                    <td>
+                      <i v-on:click="editActivity(id)" class="fa-solid fa-pen-to-square"></i>
+                      <i v-on:click="deleteActivity(activity.key)" class="fa-solid fa-trash-can"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <span v-if="Activities.length == 0">Sem atividade cadastrada ...</span>
+            </div>
 
             <fieldset class="fieldset-border">
               <legend class="legend-style">Cadastro de Atividades</legend>
 
-              <div v-if="errors.length" class="error-card">
-                <b>Por favor, corrija o(s) seguinte(s) erro(s):</b>
-
-                <div class="error-message">
-                  <i id="error-icon" class="fa-solid fa-circle-exclamation"></i>
-
-                  <div>
-                    <p v-for="error in errors">- {{ error }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <form id="formulario">
-                <div class="form-field">
+              <form id="formulario" @submit.prevent="createActivity">
+                <div class="form-group">
                   <label for="inputTitle">Título</label>
-                  <input type="text" v-model="nova_atividade.title" id="inputTitle" placeholder="Título da atividade">
-
+                  <input type="text" v-model.trim="$v.nova_atividade.title.$model" id="inputTitle"
+                    placeholder="Título da atividade" class="form-control">
+                  <span class="errorMessage" v-if="!$v.nova_atividade.title.required">Campo Obrigatório !</span>
+                  <span class="errorMessage" v-if="!$v.nova_atividade.title.maxLength">O título deve conter no máximo
+                    {{$v.nova_atividade.title.$params.maxLength.max}}
+                    caracteres.</span>
                 </div>
 
-                <div class="form-field">
+                <div class="form-group">
                   <label for="inputDate">Data de Entrega</label>
-                  <input type="date" v-model="nova_atividade.data_entrega" id="inputDate">
+                  <input type="date" v-model="$v.nova_atividade.data_entrega.$model" id="inputDate"
+                    class="form-control">
+                  <span class="errorMessage" v-if="!$v.nova_atividade.data_entrega.minValue">Informe
+                    uma data
+                    válida (superior a data atual).</span>
                 </div>
 
-                <div class="form-field">
+                <div class="form-group">
                   <label for="subject">Disciplina</label>
-                  <select id="subject" v-model="nova_atividade.subject">
+                  <select id="subject" v-model="$v.nova_atividade.subject.$model" class="form-control">
                     <option disabled value="">Escolha um item</option>
                     <option v-for="subject in Subjects" v-bind:value="subject">
                       {{ subject.name }}
                     </option>
                   </select>
+                  <span class="errorMessage" v-if="!$v.nova_atividade.subject.required">Campo Obrigatório !</span>
                 </div>
 
-                <div class="form-field">
+                <div class="form-group">
                   <label for="ActivityTopics">Tópicos da Atividade</label>
                   <textarea id="ActivityTopics" v-model="nova_atividade.topics" rows="3"
-                    placeholder="Descreva os tópicos dessa atividade"></textarea>
+                    placeholder="Descreva os tópicos dessa atividade" class="form-control"></textarea>
                 </div>
 
                 <div class="form-buttons">
-                  <button type="button" @click="cleanForm" class="btn-limpar">Limpar Formulário
+                  <button type="button" @click="cleanForm" class="btn btn-dark">Limpar Formulário
                   </button>
-                  <button type="button" @click="createActivity" class="btn-salvar">Salvar</button>
+                  <button type="submit" :disabled="submitStatus === 'PENDING'" class="btn btn-dark">Salvar</button>
                 </div>
               </form>
+
+              <div v-bind="snackbarAttrs" v-text="message"></div>
             </fieldset>
           </div>
         </div>
