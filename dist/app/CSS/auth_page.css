@@ -48,3 +48,7 @@
     align-items: center;
     height: 100vh;
 }
+
+#google-btn {
+    box-shadow: 0 0 1em #b5b5b6;
+}
