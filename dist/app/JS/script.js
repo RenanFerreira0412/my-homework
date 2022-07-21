@@ -11,6 +11,7 @@ $(document).ready(function () {
         "errorMessage": false,
         "submitStatus": null,
         "message": '',
+        "filter": '',
         "snackbarAttrs": { id: 'snackbar' },
         Activities: [], // Vetor que armazena as atividades criadas
         Subjects: [], // Vetor que armazena os documentos da coleção disciplinas
@@ -52,16 +53,35 @@ $(document).ready(function () {
             }
         },
 
-        created() {
-            //Observador do status de autenticação do usuário
-            firebase.auth().onAuthStateChanged((user) => {
-                if (user) {
-                    var uid = user.uid;
-                    console.log(uid)
+        methods: {
+            listActivity(userId) {
+                databaseRef.collection('ATIVIDADES').where("userID", "==", userId).onSnapshot((snapshotChange) => {
+                    this.Activities = [];
+                    snapshotChange.forEach((doc) => {
+                        //console.log(doc.data().docID)
+                        this.Activities.push({
+                            key: doc.data().docID,
+                            title: doc.data().title,
+                            date: doc.data().date,
+                            subject: doc.data().subject,
+                            topics: doc.data().topics,
+                        })
+                    });
+                })
+            },
 
-                    databaseRef.collection('ATIVIDADES').where("userID", "==", uid).onSnapshot((snapshotChange) => {
+            getValue: function (filterText) {
+                var user = authRef.currentUser;
+                //console.log(filterText)
+
+                var filter = filterText.toLowerCase();
+                console.log(filter)
+
+                if (filterText != "") {
+                    databaseRef.collection('ATIVIDADES').where("userID", "==", user.uid).where("titleLowerCase", "==", filter).onSnapshot((snapshotChange) => {
                         this.Activities = [];
                         snapshotChange.forEach((doc) => {
+                            //console.log(doc.data().docID)
                             this.Activities.push({
                                 key: doc.data().docID,
                                 title: doc.data().title,
@@ -71,29 +91,23 @@ $(document).ready(function () {
                             })
                         });
                     })
-
-                    //Usuário logado no app
-                    this.authPage = false;
                 } else {
-                    //Caso o usuário não esteja logado
-                    this.authPage = true;
-                }
-            });
-
-            //Carrega as informações da coleção DISCIPLINAS
-            databaseRef.collection('DISCIPLINAS').onSnapshot((snapshotChange) => {
-                this.Subjects = [];
-                snapshotChange.forEach((doc) => {
-                    this.Subjects.push({
-                        name: doc.data().name,
+                    databaseRef.collection('ATIVIDADES').where("userID", "==", user.uid).onSnapshot((snapshotChange) => {
+                        this.Activities = [];
+                        snapshotChange.forEach((doc) => {
+                            //console.log(doc.data().docID)
+                            this.Activities.push({
+                                key: doc.data().docID,
+                                title: doc.data().title,
+                                date: doc.data().date,
+                                subject: doc.data().subject,
+                                topics: doc.data().topics,
+                            })
+                        });
                     })
-                });
-            })
+                }
+            },
 
-            this.cleanForm();
-        },
-
-        methods: {
             signOut: function () {
                 var logout = window.confirm('Deseja sair da sua conta?');
 
@@ -128,6 +142,7 @@ $(document).ready(function () {
 
                         newActivityRef.set(new Activity(
                             title,
+                            title.toLowerCase(),
                             data_entrega,
                             topics,
                             subject,
@@ -144,6 +159,7 @@ $(document).ready(function () {
 
                         activityRef.update({
                             title: title,
+                            titleLowerCase: title.toLowerCase(),
                             date: data_entrega,
                             topics: topics,
                             subject: subject,
@@ -207,7 +223,37 @@ $(document).ready(function () {
                 this.nova_atividade.indice = ''
                 this.submitStatus = null
             }
-        }
+        },
+
+        created() {
+            //Observador do status de autenticação do usuário
+            authRef.onAuthStateChanged((user) => {
+                if (user) {
+                    var uid = user.uid;
+                    console.log(uid)
+
+                    this.listActivity(uid);
+
+                    //Usuário logado no app
+                    this.authPage = false;
+                } else {
+                    //Caso o usuário não esteja logado
+                    this.authPage = true;
+                }
+            });
+
+            //Carrega as informações da coleção DISCIPLINAS
+            databaseRef.collection('DISCIPLINAS').onSnapshot((snapshotChange) => {
+                this.Subjects = [];
+                snapshotChange.forEach((doc) => {
+                    this.Subjects.push({
+                        name: doc.data().name,
+                    })
+                });
+            })
+
+            this.cleanForm();
+        },
     });
 
     var vm2 = new Vue({

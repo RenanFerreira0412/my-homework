@@ -1,6 +1,7 @@
 class Activity {
-    constructor(title, date, topics, subject, docID, userID) {
+    constructor(title, titleLowerCase, date, topics, subject, docID, userID) {
         this.title = title;
+        this.titleLowerCase = titleLowerCase;
         this.date = date;
         this.topics = topics;
         this.subject = subject;
@@ -8,7 +9,7 @@ class Activity {
         this.userID = userID;
     }
     toString() {
-        return this.title + ', ' + this.date + ', ' + this.topics + ', ' + this.subject + ', ' + this.docID + ', ' + this.userID
+        return this.title + ', ' + this.titleLowerCase + ', ' + this.date + ', ' + this.topics + ', ' + this.subject + ', ' + this.docID + ', ' + this.userID
     }
 }
 
@@ -17,6 +18,7 @@ var activityConverter = {
     toFirestore: function (activity) {
         return {
             title: activity.title,
+            titleLowerCase: activity.titleLowerCase,
             date: activity.date,
             topics: activity.topics,
             subject: activity.subject,
@@ -26,6 +28,6 @@ var activityConverter = {
     },
     fromFirestore: function (snapshot, options) {
         const data = snapshot.data(options);
-        return new Activity(data.title, data.date, data.topics, data.subject, data.docID, data.userID);
+        return new Activity(data.title, data.titleLowerCase, data.date, data.topics, data.subject, data.docID, data.userID);
     }
 };

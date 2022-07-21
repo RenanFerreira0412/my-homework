@@ -127,7 +127,7 @@
         <div class="tab-pane fade show active" id="nav-form" role="tabpanel" aria-labelledby="nav-form-tab">
 
           <div class="homepage-content">
-            
+
             <fieldset class="fieldset-border">
               <legend class="legend-style">Cadastro de Atividades</legend>
 
@@ -181,22 +181,27 @@
         </div>
 
         <div class="tab-pane fade" id="nav-activity" role="tabpanel" aria-labelledby="nav-activity-tab">
-          <div v-for="(activity, id) in Activities" class="card-activity">
-            <div class="card-main-content">
-              <div class="card-main-text">
-                <p class="card-title">{{ activity.title }}</p>
-                <p class="card-subject">{{ activity.subject.name }}</p>
-              </div>
-              
-              <div class="card-actions">
-                <i v-on:click="editActivity(id)" class="fa-solid fa-pen-to-square"></i>
-                <i v-on:click="deleteActivity(activity.key)" class="fa-solid fa-trash-can"></i>
-              </div>
-            </div>
+          <div class="activity-content">
+            <input type="text" id="filter" @input="getValue(filter)" v-model="filter"
+              placeholder="Pesquise por sua atividade cadastrada" class="form-control">
 
-            <div class="card-footer-content">
-              <i class="fa-solid fa-flag"></i>
-              <p class="card-date">{{ activity.date | formataData }}</p>
+            <div v-for="(activity, id) in Activities" class="card-activity">
+              <div class="card-main-content">
+                <div class="card-main-text">
+                  <p class="card-title">{{ activity.title }}</p>
+                  <p class="card-subject">{{ activity.subject.name }}</p>
+                </div>
+
+                <div class="card-actions">
+                  <i v-on:click="editActivity(id)" class="fa-solid fa-pen-to-square"></i>
+                  <i v-on:click="deleteActivity(activity.key)" class="fa-solid fa-trash-can"></i>
+                </div>
+              </div>
+
+              <div class="card-footer-content">
+                <i class="fa-solid fa-flag"></i>
+                <p class="card-date">{{ activity.date | formataData }}</p>
+              </div>
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 25px;
 }
 
 .auth-box {
@@ -13,8 +14,20 @@
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0 0 1em #b5b5b6;
-    width: 30%;
 }
+
+@media only screen and (max-width: 600px) {
+    .auth-box {
+        width: 100%;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    .auth-box {
+        width: 600px;
+    }
+}
+
 
 #auth-form {
     display: flex;
