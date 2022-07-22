@@ -5,6 +5,27 @@
     gap: 20px;
 }
 
+.warning-message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
+}
+
+.warning-message-box {
+    border: black 1px dashed;
+    padding: 20px;
+    border-radius: 6px;
+}
+
+@media only screen and (max-width: 600px) {
+    .warning-message-box {
+        margin: 15px;
+    }
+}
+
+
 .card-activity {
     display: flex;
     flex-direction: column;

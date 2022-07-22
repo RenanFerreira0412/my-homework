@@ -3,18 +3,21 @@ $(document).ready(function () {
         "nova_atividade": { indice: '', documentID: '', title: '', data_entrega: '', topics: '', subject: '' },
         "login": { email: '', senha: '' },
         "cadastro": { name: '', email: '', senha: '', confirmSenha: '' },
+        "nova_disciplina": { nome: '', tutor: '' },
+        "editDadosUser": { phone: '', school: '', serie: '' },
         "titulo": '',
         "actionButton": '',
         "toggleButton": '',
         "authPage": null,
         "isLogin": true,
         "errorMessage": false,
-        "submitStatus": null,
         "message": '',
         "filter": '',
+        "userInfo": { userEmail: '', imagePath: '', userName: '', userPhone: '', userSerie: '', userSchool: '' },
         "snackbarAttrs": { id: 'snackbar' },
         Activities: [], // Vetor que armazena as atividades criadas
         Subjects: [], // Vetor que armazena os documentos da coleção disciplinas
+        userData: [], // Vetor que armazena os documentos da coleção usuários
         errors: []  // Vetor que armazena os erros na validação do formulário
     }
 
@@ -49,6 +52,13 @@ $(document).ready(function () {
 
                 subject: {
                     required
+                }
+            },
+
+            nova_disciplina: {
+                nome: {
+                    required,
+                    maxLength: maxLength(100)
                 }
             }
         },
@@ -120,7 +130,7 @@ $(document).ready(function () {
                 }
             },
 
-            createActivity() {
+            createActivity(v) {
                 var title = this.nova_atividade.title;
                 var data_entrega = this.nova_atividade.data_entrega.trim();
                 var topics = this.nova_atividade.topics;
@@ -128,11 +138,11 @@ $(document).ready(function () {
                 var indice = this.nova_atividade.indice;
                 var docId = this.nova_atividade.documentID;
 
-                var user = firebase.auth().currentUser;
+                var user = authRef.currentUser;
 
                 console.log(user.uid)
 
-                if (!this.$v.$invalid) {
+                if (!v.nova_atividade.title.$invalid && !v.nova_atividade.data_entrega.$invalid && !v.nova_atividade.subject.$invalid) {
                     if (isNaN(parseInt(indice))) {
                         // Add a new document with a generated id.
                         var newActivityRef = databaseRef
@@ -186,6 +196,34 @@ $(document).ready(function () {
                 }
             },
 
+            addDisciplina(v) {
+                var input_nome = this.nova_disciplina.nome;
+                var input_tutor = this.nova_disciplina.tutor.trim();
+                var user = authRef.currentUser;
+
+                if (!v.nova_disciplina.nome.$invalid) {
+
+                    databaseRef.collection("DISCIPLINAS").add({
+                        nome: input_nome,
+                        tutor: input_tutor,
+                        userId: user.uid
+                    })
+                        .then((docRef) => {
+                            console.log("Document written with ID: ", docRef.id);
+                        })
+                        .catch((error) => {
+                            console.error("Error adding document: ", error);
+                        });
+
+                    this.cleanFormDisciplina();
+
+                } else {
+                    this.message = 'Preencha o formulário corretamente.';
+                    this.showSnackbar();
+                }
+
+            },
+
             editActivity: function (param_index) {
                 this.nova_atividade.indice = param_index
                 this.nova_atividade.title = this.Activities[param_index].title;
@@ -207,11 +245,28 @@ $(document).ready(function () {
                 }
             },
 
+            navegaParaForm: function () {
+                $('#nav-form-tab').tab('show') // Navega para o formulário 
+            },
+
+            updateDadosUser: function () {
+                var input_phone = this.editDadosUser.phone;
+                var input_school = this.editDadosUser.school.trim();
+                var input_serie = this.editDadosUser.serie.trim();
+
+
+            },
+
             showSnackbar: function () {
                 var snackbar = document.getElementById(this.snackbarAttrs.id);
 
                 snackbar.className = "show";
                 setTimeout(function () { snackbar.className = snackbar.className.replace("show", ""); }, 3000);
+            },
+
+            cleanFormDisciplina: function () {
+                this.nova_disciplina.nome = '';
+                this.nova_disciplina.tutor = '';
             },
 
             cleanForm: function () {
@@ -221,7 +276,6 @@ $(document).ready(function () {
                 this.nova_atividade.topics = ''
                 this.nova_atividade.subject = ''
                 this.nova_atividade.indice = ''
-                this.submitStatus = null
             }
         },
 
@@ -234,6 +288,33 @@ $(document).ready(function () {
 
                     this.listActivity(uid);
 
+                    //this.userInfo.userEmail = user.email;
+                    this.userInfo.imagePath = user.photoURL ? user.photoURL : 'ASSETS/IMG/user-avatar.png';
+
+                    //Carrega as informações da coleção USUARIOS
+                    databaseRef.collection('USUARIOS').where("id", "==", uid).onSnapshot((snapshotChange) => {
+                        this.userData = [];
+                        snapshotChange.forEach((doc) => {
+                            this.userData.push({
+                                nome: doc.data().name,
+                                email: doc.data().email,
+                                phone: doc.data().phone ? doc.data().phone : 'Informação não cadastrada !',
+                                school: doc.data().school ? doc.data().school : 'Informação não cadastrada !',
+                                serie: doc.data().serie ? doc.data().serie : 'Informação não cadastrada !',
+                            })
+                        });
+                    })
+
+                    //Carrega as informações da coleção DISCIPLINAS
+                    databaseRef.collection('DISCIPLINAS').where("userId", "==", uid).onSnapshot((snapshotChange) => {
+                        this.Subjects = [];
+                        snapshotChange.forEach((doc) => {
+                            this.Subjects.push({
+                                nome: doc.data().nome,
+                            })
+                        });
+                    })
+
                     //Usuário logado no app
                     this.authPage = false;
                 } else {
@@ -241,16 +322,6 @@ $(document).ready(function () {
                     this.authPage = true;
                 }
             });
-
-            //Carrega as informações da coleção DISCIPLINAS
-            databaseRef.collection('DISCIPLINAS').onSnapshot((snapshotChange) => {
-                this.Subjects = [];
-                snapshotChange.forEach((doc) => {
-                    this.Subjects.push({
-                        name: doc.data().name,
-                    })
-                });
-            })
 
             this.cleanForm();
         },
@@ -433,6 +504,9 @@ $(document).ready(function () {
                 databaseRef.collection("USUARIOS").add({
                     name: name,
                     email: email,
+                    phone: '',
+                    serie: '',
+                    school: '',
                     id: userId
                 })
                     .then((docRef) => {
