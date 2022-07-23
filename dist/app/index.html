@@ -119,8 +119,10 @@
     <div v-if="!authPage">
       <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-          <a class="nav-item nav-link active" id="nav-form-tab" data-toggle="tab" href="#nav-form" role="tab"
-            aria-controls="nav-form" aria-selected="true">Formulário</a>
+          <a class="nav-item nav-link active" id="nav-disciplinas-tab" data-toggle="tab" href="#nav-disciplinas"
+            role="tab" aria-controls="nav-disciplinas" aria-selected="true">Cadastro de disciplinas</a>
+          <a class="nav-item nav-link" id="nav-form-tab" data-toggle="tab" href="#nav-form" role="tab"
+            aria-controls="nav-form" aria-selected="false">Cadastro de atividades</a>
           <a class="nav-item nav-link" id="nav-activity-tab" data-toggle="tab" href="#nav-activity" role="tab"
             aria-controls="nav-activity" aria-selected="false">Atividades</a>
           <a class="nav-item nav-link" id="nav-userData-tab" data-toggle="tab" href="#nav-userData" role="tab"
@@ -128,9 +130,29 @@
         </div>
       </nav>
       <div class="tab-content" id="nav-tabContent">
-        <div class="tab-pane fade show active" id="nav-form" role="tabpanel" aria-labelledby="nav-form-tab">
-
-          <div class="homepage-content">
+        <div class="tab-pane fade show active" id="nav-disciplinas" role="tabpanel"
+          aria-labelledby="nav-disciplinas-tab">
+          <div class="disciplina-content">
+            <table class="table table-bordered table-hover table-sm">
+              <caption>Lista de disciplinas</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Tutor</th>
+                  <th scope="col">Disciplina</th>
+                  <th scope="col">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(subject, id) in Subjects">
+                  <td>{{ subject.nome }}</td>
+                  <td>{{ subject.tutor }}</td>
+                  <td>
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <i class="fa-solid fa-trash"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
             <div>
               <h5>Cadastro de disciplinas</h5>
@@ -155,9 +177,14 @@
 
                 <button type="submit" class="btn btn-dark">Salvar</button>
               </form>
+
+              <div v-bind="snackbarAttrs" v-text="message"></div>
             </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="nav-form" role="tabpanel" aria-labelledby="nav-form-tab">
 
-
+          <div class="homepage-content">
             <div>
               <h5>Cadastro de Atividades</h5>
 
@@ -221,7 +248,7 @@
             <div class="warning-message" v-if="Activities.length == 0">
               <div class="warning-message-box">
                 <div>
-                  <h5>Nenhuma atividade cadastrada !</h5>
+                  <h5>Nenhuma atividade encontrada !</h5>
                   <p>Cadastre suas atividades agora</p>
                 </div>
 
@@ -295,20 +322,20 @@
               <form @submit.prevent="updateDadosUser">
                 <div class="form-group">
                   <label for="phone">Telefone</label>
-                  <input type="tel" class="form-control" v-model="editDadosUser.phone" id="phone"
+                  <input type="tel" class="form-control" @input="isEmpty" v-model="editDadosUser.phone" id="phone"
                     placeholder="Seu telefone">
                 </div>
                 <div class="form-group">
                   <label for="school">Instituição/Escola</label>
-                  <input type="text" class="form-control" v-model="editDadosUser.school" id="school"
+                  <input type="text" class="form-control" @input="isEmpty" v-model="editDadosUser.school" id="school"
                     placeholder="Instituição de ensino">
                 </div>
                 <div class="form-group">
                   <label for="serie">Série</label>
-                  <input type="text" class="form-control" v-model="editDadosUser.serie" id="serie"
+                  <input type="text" class="form-control" @input="isEmpty" v-model="editDadosUser.serie" id="serie"
                     placeholder="Série escolar">
                 </div>
-                <button type="submit" class="btn btn-dark">Salvar</button>
+                <button type="submit" v-bind:disabled="isButtonDisabled" class="btn btn-dark">Salvar</button>
               </form>
             </div>
           </div>

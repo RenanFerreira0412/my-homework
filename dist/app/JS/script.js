@@ -13,7 +13,8 @@ $(document).ready(function () {
         "errorMessage": false,
         "message": '',
         "filter": '',
-        "userInfo": { userEmail: '', imagePath: '', userName: '', userPhone: '', userSerie: '', userSchool: '' },
+        "isButtonDisabled": '',
+        "userInfo": { imagePath: '' },
         "snackbarAttrs": { id: 'snackbar' },
         Activities: [], // Vetor que armazena as atividades criadas
         Subjects: [], // Vetor que armazena os documentos da coleção disciplinas
@@ -253,8 +254,34 @@ $(document).ready(function () {
                 var input_phone = this.editDadosUser.phone;
                 var input_school = this.editDadosUser.school.trim();
                 var input_serie = this.editDadosUser.serie.trim();
+                var user = authRef.currentUser;
 
+                var userRef = databaseRef
+                    .collection("USUARIOS")
+                    .doc(user.uid)
 
+                userRef.update({
+                    phone: input_phone,
+                    serie: input_serie,
+                    school: input_school,
+                })
+                    .then(() => {
+                        console.log("Document successfully updated!");
+                    })
+                    .catch((error) => {
+                        // The document probably doesn't exist.
+                        console.error("Error updating document: ", error);
+                    });
+
+                this.cleanFormUserInfo();
+            },
+
+            isEmpty: function () {
+                if (this.editDadosUser.phone == '' && this.editDadosUser.school == '' && this.editDadosUser.serie == '') {
+                    this.isButtonDisabled = ''
+                } else {
+                    this.isButtonDisabled = false
+                }
             },
 
             showSnackbar: function () {
@@ -267,6 +294,12 @@ $(document).ready(function () {
             cleanFormDisciplina: function () {
                 this.nova_disciplina.nome = '';
                 this.nova_disciplina.tutor = '';
+            },
+
+            cleanFormUserInfo: function () {
+                this.editDadosUser.phone = '';
+                this.editDadosUser.school = '';
+                this.editDadosUser.serie = '';
             },
 
             cleanForm: function () {
@@ -288,7 +321,6 @@ $(document).ready(function () {
 
                     this.listActivity(uid);
 
-                    //this.userInfo.userEmail = user.email;
                     this.userInfo.imagePath = user.photoURL ? user.photoURL : 'ASSETS/IMG/user-avatar.png';
 
                     //Carrega as informações da coleção USUARIOS
@@ -311,6 +343,7 @@ $(document).ready(function () {
                         snapshotChange.forEach((doc) => {
                             this.Subjects.push({
                                 nome: doc.data().nome,
+                                tutor: doc.data().tutor,
                             })
                         });
                     })
@@ -458,7 +491,10 @@ $(document).ready(function () {
                         var token = credential.accessToken;
                         // The signed-in user info.
                         var user = result.user;
-                        // ...
+
+                        //Chama a função que cria a coleção dos usuários
+                        this.addUser(user.displayName, user.email, user.uid)
+
                     }).catch((error) => {
                         // Handle Errors here.
                         var errorCode = error.code;
@@ -501,20 +537,19 @@ $(document).ready(function () {
             },
 
             addUser: function (name, email, userId) {
-                databaseRef.collection("USUARIOS").add({
-                    name: name,
-                    email: email,
-                    phone: '',
-                    serie: '',
-                    school: '',
-                    id: userId
-                })
-                    .then((docRef) => {
-                        console.log("Document written with ID: ", docRef.id);
-                    })
-                    .catch((error) => {
-                        console.error("Error adding document: ", error);
-                    });
+                var newUserRef = databaseRef
+                    .collection("USUARIOS")
+                    .doc(userId)
+                    .withConverter(userConverter);
+
+                newUserRef.set(new User(
+                    name,
+                    email,
+                    '',
+                    '',
+                    '',
+                    userId
+                ));
             },
 
             cleanFormLogin: function () {

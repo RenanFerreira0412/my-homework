@@ -31,3 +31,36 @@ var activityConverter = {
         return new Activity(data.title, data.titleLowerCase, data.date, data.topics, data.subject, data.docID, data.userID);
     }
 };
+
+
+class User {
+    constructor(name, email, phone, serie, school, id) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.serie = serie;
+        this.school = school;
+        this.id = id;
+    }
+    toString() {
+        return this.name + ', ' + this.email + ', ' + this.phone + ', ' + this.serie + ', ' + this.school + ', ' + this.id
+    }
+}
+
+// Firestore data converter
+var userConverter = {
+    toFirestore: function (user) {
+        return {
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            serie: user.serie,
+            school: user.school,
+            id: user.id
+        };
+    },
+    fromFirestore: function (snapshot, options) {
+        const data = snapshot.data(options);
+        return new User(data.name, data.email, data.phone, data.serie, data.school, data.id);
+    }
+};

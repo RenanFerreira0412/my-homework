@@ -9,6 +9,12 @@
     display: flex;
     flex-direction: column;
     padding: 16px;
+}
+
+.disciplina-content {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
     gap: 50px;
 }
 
