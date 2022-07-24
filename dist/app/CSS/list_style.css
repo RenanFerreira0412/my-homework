@@ -1,7 +1,6 @@
 .activity-content {
     display: flex;
     flex-direction: column;
-    padding: 16px;
     gap: 20px;
 }
 
@@ -26,30 +25,8 @@
 }
 
 
-.card-activity {
+.card-list {
     display: flex;
     flex-direction: column;
-    padding: 16px;
-    margin-bottom: 16px;
-    gap: 5px;
-    border-radius: 15px;
-    box-shadow: 0 0 1em #b5b5b6;
-}
-
-.card-main-content {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.card-footer-content {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.card-actions {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
+    gap: 20px;
 }

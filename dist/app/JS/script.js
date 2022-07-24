@@ -3,7 +3,7 @@ $(document).ready(function () {
         "nova_atividade": { indice: '', documentID: '', title: '', data_entrega: '', topics: '', subject: '' },
         "login": { email: '', senha: '' },
         "cadastro": { name: '', email: '', senha: '', confirmSenha: '' },
-        "nova_disciplina": { nome: '', tutor: '' },
+        "nova_disciplina": { indice: '', documentID: '', nome: '', tutor: '' },
         "editDadosUser": { phone: '', school: '', serie: '' },
         "titulo": '',
         "actionButton": '',
@@ -15,7 +15,11 @@ $(document).ready(function () {
         "filter": '',
         "isButtonDisabled": '',
         "userInfo": { imagePath: '' },
-        "snackbarAttrs": { id: 'snackbar' },
+        "snackbarAttrs": {
+            snackbar: false,
+            text: '',
+            timeout: 2000,
+        },
         Activities: [], // Vetor que armazena as atividades criadas
         Subjects: [], // Vetor que armazena os documentos da coleção disciplinas
         userData: [], // Vetor que armazena os documentos da coleção usuários
@@ -37,8 +41,11 @@ $(document).ready(function () {
 
     const { required, maxLength, minValue, numeric, minLength, sameAs, sameAsPassword } = window.validators
 
+    Vue.use(Vuetify)
+
     var vm = new Vue({
         el: '#app',
+        vuetify: new Vuetify(),
         data: dados,
         validations: {
             nova_atividade: {
@@ -160,8 +167,6 @@ $(document).ready(function () {
                             newActivityRef.id,
                             user.uid));
 
-                        this.message = 'Nova Atividade Cadastrada !';
-                        this.showSnackbar();
                     } else {
 
                         var activityRef = databaseRef
@@ -183,46 +188,16 @@ $(document).ready(function () {
                                 console.error("Error updating document: ", error);
                             });
 
-                        this.message = 'Atividade Alterada !';
-                        this.showSnackbar();
                     }
 
                     //Chama o função que limpa o formulário
                     this.cleanForm();
 
-                    $('#nav-activity-tab').tab('show') // Navega para a página de Atividades
+                    $('#pills-listAtividade-tab').tab('show') // Navega para a lista de atividades
                 } else {
-                    this.message = 'Preencha o formulário corretamente.';
-                    this.showSnackbar();
+                    this.snackbarAttrs.text = 'Preencha o formulário corretamente.';
+                    this.snackbarAttrs.snackbar = true;
                 }
-            },
-
-            addDisciplina(v) {
-                var input_nome = this.nova_disciplina.nome;
-                var input_tutor = this.nova_disciplina.tutor.trim();
-                var user = authRef.currentUser;
-
-                if (!v.nova_disciplina.nome.$invalid) {
-
-                    databaseRef.collection("DISCIPLINAS").add({
-                        nome: input_nome,
-                        tutor: input_tutor,
-                        userId: user.uid
-                    })
-                        .then((docRef) => {
-                            console.log("Document written with ID: ", docRef.id);
-                        })
-                        .catch((error) => {
-                            console.error("Error adding document: ", error);
-                        });
-
-                    this.cleanFormDisciplina();
-
-                } else {
-                    this.message = 'Preencha o formulário corretamente.';
-                    this.showSnackbar();
-                }
-
             },
 
             editActivity: function (param_index) {
@@ -233,7 +208,7 @@ $(document).ready(function () {
                 this.nova_atividade.topics = this.Activities[param_index].topics;
                 this.nova_atividade.documentID = this.Activities[param_index].key;
 
-                $('#nav-form-tab').tab('show') // Navega para o formulário  
+                $('#pills-formAtividade-tab').tab('show') // Navega para o formulário de atividades
             },
 
             deleteActivity: function (documentID) {
@@ -246,8 +221,80 @@ $(document).ready(function () {
                 }
             },
 
+            addDisciplina(v) {
+                var input_nome = this.nova_disciplina.nome;
+                var input_tutor = this.nova_disciplina.tutor.trim();
+                var indice = this.nova_disciplina.indice;
+                var docId = this.nova_disciplina.documentID;
+                var user = authRef.currentUser;
+
+                if (!v.nova_disciplina.nome.$invalid) {
+                    if (isNaN(parseInt(indice))) {
+                        var newDisciplinaRef = databaseRef
+                            .collection("DISCIPLINAS")
+                            .doc();
+
+                        newDisciplinaRef.set({
+                            nome: input_nome,
+                            tutor: input_tutor,
+                            userId: user.uid,
+                            docId: newDisciplinaRef.id
+                        });
+
+                    } else {
+                        var disciplinaRef = databaseRef
+                            .collection("DISCIPLINAS")
+                            .doc(docId)
+
+                        disciplinaRef.update({
+                            nome: input_nome,
+                            tutor: input_tutor
+                        })
+                            .then(() => {
+                                console.log("Document successfully updated!");
+                            })
+                            .catch((error) => {
+                                // The document probably doesn't exist.
+                                console.error("Error updating document: ", error);
+                            });
+                    }
+
+                    this.cleanFormDisciplina();
+
+                    $('#pills-listDisciplina-tab').tab('show') // Navega para a lista de atividades
+                } else {
+                    this.snackbarAttrs.text = 'Preencha o formulário corretamente.';
+                    this.snackbarAttrs.snackbar = true;
+                }
+
+            },
+
+            editDisciplina: function (param_index) {
+                this.nova_disciplina.indice = param_index
+                this.nova_disciplina.nome = this.Subjects[param_index].nome;
+                this.nova_disciplina.tutor = this.Subjects[param_index].tutor;
+                this.nova_disciplina.documentID = this.Subjects[param_index].docId;
+
+                $('#pills-formDisciplina-tab').tab('show') // Navega para o formulário de atividades
+            },
+
+            deleteDisciplina: function (documentID) {
+                if (window.confirm("Você realmente deseja excluir essa disciplina?")) {
+                    databaseRef.collection("DISCIPLINAS").doc(documentID).delete().then(() => {
+                        console.log("Document successfully deleted!");
+                    }).catch((error) => {
+                        console.error("Error removing document: ", error);
+                    });
+                }
+            },
+
+            cleanFormDisciplina: function () {
+                this.nova_disciplina.nome = '';
+                this.nova_disciplina.tutor = '';
+            },
+
             navegaParaForm: function () {
-                $('#nav-form-tab').tab('show') // Navega para o formulário 
+                $('#pills-formAtividade-tab').tab('show') // Navega para o formulário de atividades
             },
 
             updateDadosUser: function () {
@@ -276,26 +323,6 @@ $(document).ready(function () {
                 this.cleanFormUserInfo();
             },
 
-            isEmpty: function () {
-                if (this.editDadosUser.phone == '' && this.editDadosUser.school == '' && this.editDadosUser.serie == '') {
-                    this.isButtonDisabled = ''
-                } else {
-                    this.isButtonDisabled = false
-                }
-            },
-
-            showSnackbar: function () {
-                var snackbar = document.getElementById(this.snackbarAttrs.id);
-
-                snackbar.className = "show";
-                setTimeout(function () { snackbar.className = snackbar.className.replace("show", ""); }, 3000);
-            },
-
-            cleanFormDisciplina: function () {
-                this.nova_disciplina.nome = '';
-                this.nova_disciplina.tutor = '';
-            },
-
             cleanFormUserInfo: function () {
                 this.editDadosUser.phone = '';
                 this.editDadosUser.school = '';
@@ -309,6 +336,14 @@ $(document).ready(function () {
                 this.nova_atividade.topics = ''
                 this.nova_atividade.subject = ''
                 this.nova_atividade.indice = ''
+            },
+
+            isEmpty: function () {
+                if (this.editDadosUser.phone == '' && this.editDadosUser.school == '' && this.editDadosUser.serie == '') {
+                    this.isButtonDisabled = ''
+                } else {
+                    this.isButtonDisabled = false
+                }
             }
         },
 
@@ -344,6 +379,7 @@ $(document).ready(function () {
                             this.Subjects.push({
                                 nome: doc.data().nome,
                                 tutor: doc.data().tutor,
+                                docId: doc.data().docId
                             })
                         });
                     })
@@ -505,7 +541,8 @@ $(document).ready(function () {
                         var email = error.email;
                         // The firebase.auth.AuthCredential type that was used.
                         var credential = error.credential;
-                        // ...
+                        // auth/operation-not-supported-in-this-environment
+                        //auth/unauthorized-domain
                     });
 
             },
@@ -545,9 +582,6 @@ $(document).ready(function () {
                 newUserRef.set(new User(
                     name,
                     email,
-                    '',
-                    '',
-                    '',
                     userId
                 ));
             },
