@@ -1,5 +1,8 @@
 $(document).ready(function () {
     var dados = {
+        items: [],
+        vetFilterDisciplina: [],
+        menu2: false,
         "nova_atividade": { indice: '', documentID: '', title: '', data_entrega: '', topics: '', subject: '' },
         "login": { email: '', senha: '' },
         "cadastro": { name: '', email: '', senha: '', confirmSenha: '' },
@@ -15,6 +18,7 @@ $(document).ready(function () {
         "filter": '',
         "isButtonDisabled": '',
         "userInfo": { imagePath: '' },
+        "hello": { nome: '' },
         "snackbarAttrs": {
             snackbar: false,
             text: '',
@@ -51,7 +55,7 @@ $(document).ready(function () {
             nova_atividade: {
                 title: {
                     required,
-                    maxLength: maxLength(200)
+                    maxLength: maxLength(100)
                 },
 
                 data_entrega: {
@@ -66,14 +70,58 @@ $(document).ready(function () {
             nova_disciplina: {
                 nome: {
                     required,
-                    maxLength: maxLength(100)
+                    maxLength: maxLength(70)
+                },
+
+                tutor: {
+                    maxLength: maxLength(70)
                 }
+            }
+        },
+
+        computed: {
+            nameDisciplinaErrors() {
+                const errors = []
+                if (!this.$v.nova_disciplina.nome.$dirty) return errors
+                !this.$v.nova_disciplina.nome.maxLength && errors.push('A disciplina deve conter no máximo 70 characters')
+                !this.$v.nova_disciplina.nome.required && errors.push('Campo obrigatório !')
+                return errors
+            },
+            nameTutorErrors() {
+                const errors = []
+                if (!this.$v.nova_disciplina.tutor.$dirty) return errors
+                !this.$v.nova_disciplina.tutor.maxLength && errors.push('O nome do tutor deve conter no máximo 70 characters')
+                return errors
+            },
+            titleErrors() {
+                const errors = []
+                if (!this.$v.nova_atividade.title.$dirty) return errors
+                !this.$v.nova_atividade.title.maxLength && errors.push('O título deve conter no máximo 100 characters')
+                !this.$v.nova_atividade.title.required && errors.push('Campo obrigatório !')
+                return errors
+            },
+            dateErrors() {
+                const errors = []
+                if (!this.$v.nova_atividade.data_entrega.$dirty) return errors
+                !this.$v.nova_atividade.data_entrega.minValue && errors.push('A data deve ser superior a data atual')
+                return errors
+            },
+            selectErrors() {
+                const errors = []
+                if (!this.$v.nova_atividade.subject.$dirty) return errors
+                !this.$v.nova_atividade.subject.required && errors.push('Campo obrigatório !')
+                return errors
             }
         },
 
         methods: {
             listActivity(userId) {
-                databaseRef.collection('ATIVIDADES').where("userID", "==", userId).onSnapshot((snapshotChange) => {
+                var atividadeStream = databaseRef.collection('ATIVIDADES').where("userID", "==", userId)
+                this.buildActivities(atividadeStream)
+            },
+
+            buildActivities: function (stream) {
+                stream.onSnapshot((snapshotChange) => {
                     this.Activities = [];
                     snapshotChange.forEach((doc) => {
                         //console.log(doc.data().docID)
@@ -89,41 +137,50 @@ $(document).ready(function () {
             },
 
             getValue: function (filterText) {
+                console.log(filterText)
                 var user = authRef.currentUser;
-                //console.log(filterText)
-
-                var filter = filterText.toLowerCase();
-                console.log(filter)
-
-                if (filterText != "") {
-                    databaseRef.collection('ATIVIDADES').where("userID", "==", user.uid).where("titleLowerCase", "==", filter).onSnapshot((snapshotChange) => {
-                        this.Activities = [];
-                        snapshotChange.forEach((doc) => {
-                            //console.log(doc.data().docID)
-                            this.Activities.push({
-                                key: doc.data().docID,
-                                title: doc.data().title,
-                                date: doc.data().date,
-                                subject: doc.data().subject,
-                                topics: doc.data().topics,
-                            })
-                        });
-                    })
+                if (this.vetFilterDisciplina.length == 0) {
+                    var atividadeStream = databaseRef.collection('ATIVIDADES').where("userID", "==", user.uid)
+                    this.buildActivities(atividadeStream)
                 } else {
-                    databaseRef.collection('ATIVIDADES').where("userID", "==", user.uid).onSnapshot((snapshotChange) => {
-                        this.Activities = [];
-                        snapshotChange.forEach((doc) => {
-                            //console.log(doc.data().docID)
-                            this.Activities.push({
-                                key: doc.data().docID,
-                                title: doc.data().title,
-                                date: doc.data().date,
-                                subject: doc.data().subject,
-                                topics: doc.data().topics,
-                            })
-                        });
-                    })
+                    var filterAtividadeStream = databaseRef.collection('ATIVIDADES').where("userID", "==", user.uid).where("subject", "in", this.vetFilterDisciplina)
+                    this.buildActivities(filterAtividadeStream)
                 }
+                // var user = authRef.currentUser;
+                // //console.log(filterText)
+
+                // var filter = filterText.toLowerCase();
+                // console.log(filter)
+
+                // if (filterText != "") {
+                //     databaseRef.collection('ATIVIDADES').where("userID", "==", user.uid).where("titleLowerCase", "==", filter).onSnapshot((snapshotChange) => {
+                //         this.Activities = [];
+                //         snapshotChange.forEach((doc) => {
+                //             //console.log(doc.data().docID)
+                //             this.Activities.push({
+                //                 key: doc.data().docID,
+                //                 title: doc.data().title,
+                //                 date: doc.data().date,
+                //                 subject: doc.data().subject,
+                //                 topics: doc.data().topics,
+                //             })
+                //         });
+                //     })
+                // } else {
+                //     databaseRef.collection('ATIVIDADES').where("userID", "==", user.uid).onSnapshot((snapshotChange) => {
+                //         this.Activities = [];
+                //         snapshotChange.forEach((doc) => {
+                //             //console.log(doc.data().docID)
+                //             this.Activities.push({
+                //                 key: doc.data().docID,
+                //                 title: doc.data().title,
+                //                 date: doc.data().date,
+                //                 subject: doc.data().subject,
+                //                 topics: doc.data().topics,
+                //             })
+                //         });
+                //     })
+                // }
             },
 
             signOut: function () {
@@ -149,6 +206,8 @@ $(document).ready(function () {
                 var user = authRef.currentUser;
 
                 console.log(user.uid)
+
+                this.$v.$touch()
 
                 if (!v.nova_atividade.title.$invalid && !v.nova_atividade.data_entrega.$invalid && !v.nova_atividade.subject.$invalid) {
                     if (isNaN(parseInt(indice))) {
@@ -221,12 +280,24 @@ $(document).ready(function () {
                 }
             },
 
+            cleanForm: function () {
+                this.$v.$reset()
+                this.nova_atividade.codigo = '';
+                this.nova_atividade.title = '';
+                this.nova_atividade.data_entrega = '';
+                this.nova_atividade.topics = ''
+                this.nova_atividade.subject = ''
+                this.nova_atividade.indice = ''
+            },
+
             addDisciplina(v) {
                 var input_nome = this.nova_disciplina.nome;
                 var input_tutor = this.nova_disciplina.tutor.trim();
                 var indice = this.nova_disciplina.indice;
                 var docId = this.nova_disciplina.documentID;
                 var user = authRef.currentUser;
+
+                this.$v.$touch()
 
                 if (!v.nova_disciplina.nome.$invalid) {
                     if (isNaN(parseInt(indice))) {
@@ -289,6 +360,7 @@ $(document).ready(function () {
             },
 
             cleanFormDisciplina: function () {
+                this.$v.$reset();
                 this.nova_disciplina.nome = '';
                 this.nova_disciplina.tutor = '';
             },
@@ -327,15 +399,6 @@ $(document).ready(function () {
                 this.editDadosUser.phone = '';
                 this.editDadosUser.school = '';
                 this.editDadosUser.serie = '';
-            },
-
-            cleanForm: function () {
-                this.nova_atividade.codigo = '';
-                this.nova_atividade.title = '';
-                this.nova_atividade.data_entrega = '';
-                this.nova_atividade.topics = ''
-                this.nova_atividade.subject = ''
-                this.nova_atividade.indice = ''
             },
 
             isEmpty: function () {
@@ -381,6 +444,8 @@ $(document).ready(function () {
                                 tutor: doc.data().tutor,
                                 docId: doc.data().docId
                             })
+
+                            this.items.push(doc.data().nome)
                         });
                     })
 

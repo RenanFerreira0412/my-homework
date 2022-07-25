@@ -108,7 +108,7 @@
               </div>
             </div>
 
-            <button type="button" @click="authBtn($v)" v-text="actionButton" class="btn btn-dark">Entrar</button>
+            <button type="button" @click="authBtn($v)" v-text="actionButton" class="btn btn-secondary"></button>
             <button type="button" id="google-btn" @click="googleLogin" class="btn btn-light"><i
                 class="fa-brands fa-google"></i> Entrar com o
               Google</button>
@@ -122,231 +122,99 @@
   <div id="app">
     <!--Página inicial do app-->
     <div v-if="!authPage">
-      <nav>
-        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-          <a class="nav-item nav-link active" id="nav-disciplinas-tab" data-toggle="tab" href="#nav-disciplinas"
-            role="tab" aria-controls="nav-disciplinas" aria-selected="true">Disciplinas</a>
-          <a class="nav-item nav-link" id="nav-atividades-tab" data-toggle="tab" href="#nav-atividades" role="tab"
-            aria-controls="nav-atividades" aria-selected="false">Atividades</a>
-          <a class="nav-item nav-link" id="nav-userData-tab" data-toggle="tab" href="#nav-userData" role="tab"
-            aria-controls="nav-userData" aria-selected="false">Meus Dados</a>
-        </div>
-      </nav>
-      <div class="tab-content" id="nav-tabContent">
-        <div class="tab-pane fade show active" id="nav-disciplinas" role="tabpanel"
-          aria-labelledby="nav-disciplinas-tab">
-
-          <div class="homepage-content">
-
-            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-              <li class="nav-item">
-                <a class="nav-link active" id="pills-formDisciplina-tab" data-toggle="pill" href="#pills-formDisciplina"
-                  role="tab" aria-controls="pills-formDisciplina" aria-selected="true">Cadastro</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="pills-listDisciplina-tab" data-toggle="pill" href="#pills-listDisciplina"
-                  role="tab" aria-controls="pills-listDisciplina" aria-selected="false">Minhas Disciplinas</a>
-              </li>
-            </ul>
-            <div class="tab-content" id="pills-tabContent">
-              <div class="tab-pane fade show active" id="pills-formDisciplina" role="tabpanel"
-                aria-labelledby="pills-formDisciplina-tab">
-
-                <div>
-                  <h5>Cadastro de disciplinas</h5>
-
-                  <form>
-                    <div class="form-group">
-                      <label for="disciplina">Disciplina</label>
-                      <input type="text" class="form-control" v-model.trim="$v.nova_disciplina.nome.$model"
-                        id="disciplina" placeholder="Nome da disciplina">
-                      <span class="errorMessage" v-if="!$v.nova_disciplina.nome.required">Campo Obrigatório !</span>
-                      <span class="errorMessage" v-if="!$v.nova_disciplina.nome.maxLength">A disciplina deve conter no
-                        máximo
-                        {{$v.nova_disciplina.nome.$params.maxLength.max}}
-                        caracteres.</span>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="professor">Professor(a)</label>
-                      <input type="text" class="form-control" v-model="nova_disciplina.tutor" id="professor"
-                        placeholder="Nome do(a) professor(a)">
-                    </div>
-
-                    <div class="form-buttons">
-                      <v-btn elevation="7" @click="cleanFormDisciplina" large raised>Limpar Formulário</v-btn>
-                      <v-btn elevation="7" @click="addDisciplina($v)" large raised> Salvar</v-btn>
-                    </div>
-                  </form>
-
-                  <v-snackbar v-model="snackbarAttrs.snackbar" :timeout="snackbarAttrs.timeout">
-                    {{ snackbarAttrs.text }}
-
-                    <template v-slot:action="{ attrs }">
-                      <v-btn color="blue" text v-bind="attrs" @click="snackbarAttrs.snackbar = false">
-                        Close
-                      </v-btn>
-                    </template>
-                  </v-snackbar>
-
-                </div>
-              </div>
-
-              <div class="tab-pane fade" id="pills-listDisciplina" role="tabpanel"
-                aria-labelledby="pills-listDisciplina-tab">
-                <template>
-                  <div class="card-list">
-                    <v-card elevation="24" v-for="(subject, id) in Subjects" tile>
-                      <v-card-title>
-                        <p class="text-h4 text--primary">
-                          {{ subject.nome }}
-                        </p>
-                      </v-card-title>
-
-                      <v-card-subtitle>
-                        <p>{{ subject.tutor }}</p>
-                      </v-card-subtitle>
-
-                      <v-card-actions>
-                        <div>
-                          <v-btn v-on:click="editDisciplina(id)" outlined rounded text>
-                            Editar
-                          </v-btn>
-
-                          <v-btn v-on:click="deleteDisciplina(subject.docId)" outlined rounded text>
-                            Remover
-                          </v-btn>
-                        </div>
-                      </v-card-actions>
-                    </v-card>
-                  </div>
-                </template>
-              </div>
-            </div>
+      <v-app>
+        <nav>
+          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active" id="nav-disciplinas-tab" data-toggle="tab" href="#nav-disciplinas"
+              role="tab" aria-controls="nav-disciplinas" aria-selected="true">Disciplinas</a>
+            <a class="nav-item nav-link" id="nav-atividades-tab" data-toggle="tab" href="#nav-atividades" role="tab"
+              aria-controls="nav-atividades" aria-selected="false">Atividades</a>
+            <a class="nav-item nav-link" id="nav-userData-tab" data-toggle="tab" href="#nav-userData" role="tab"
+              aria-controls="nav-userData" aria-selected="false">Meus Dados</a>
           </div>
-        </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+          <div class="tab-pane fade show active" id="nav-disciplinas" role="tabpanel"
+            aria-labelledby="nav-disciplinas-tab">
 
-        <div class="tab-pane fade" id="nav-atividades" role="tabpanel" aria-labelledby="nav-atividades-tab">
-          <div class="homepage-content">
-            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-              <li class="nav-item">
-                <a class="nav-link active" id="pills-formAtividade-tab" data-toggle="pill" href="#pills-formAtividade"
-                  role="tab" aria-controls="pills-formAtividade" aria-selected="true">Cadastro</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="pills-listAtividade-tab" data-toggle="pill" href="#pills-listAtividade"
-                  role="tab" aria-controls="pills-listAtividade" aria-selected="false">Minhas Atividades</a>
-              </li>
-            </ul>
-            <div class="tab-content" id="pills-tabContent">
-              <div class="tab-pane fade show active" id="pills-formAtividade" role="tabpanel"
-                aria-labelledby="pills-formAtividade-tab">
-                <div>
-                  <h5>Cadastro de Atividades</h5>
+            <div class="homepage-content">
 
-                  <form>
-                    <div class="form-group">
-                      <label for="inputTitle">Título</label>
-                      <input type="text" v-model.trim="$v.nova_atividade.title.$model" id="inputTitle"
-                        placeholder="Título da atividade" class="form-control">
-                      <span class="errorMessage" v-if="!$v.nova_atividade.title.required">Campo Obrigatório !</span>
-                      <span class="errorMessage" v-if="!$v.nova_atividade.title.maxLength">O título deve conter no
-                        máximo
-                        {{$v.nova_atividade.title.$params.maxLength.max}}
-                        caracteres.</span>
-                    </div>
+              <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" id="pills-formDisciplina-tab" data-toggle="pill"
+                    href="#pills-formDisciplina" role="tab" aria-controls="pills-formDisciplina"
+                    aria-selected="true">Cadastro</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="pills-listDisciplina-tab" data-toggle="pill" href="#pills-listDisciplina"
+                    role="tab" aria-controls="pills-listDisciplina" aria-selected="false">Minhas Disciplinas</a>
+                </li>
+              </ul>
+              <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-formDisciplina" role="tabpanel"
+                  aria-labelledby="pills-formDisciplina-tab">
 
-                    <div class="form-row">
-                      <div class="form-group col-md-6">
-                        <label for="inputDate">Data de Entrega</label>
-                        <input type="date" v-model="$v.nova_atividade.data_entrega.$model" id="inputDate"
-                          class="form-control">
-                        <span class="errorMessage" v-if="!$v.nova_atividade.data_entrega.minValue">Informe
-                          uma data
-                          válida (superior a data atual).</span>
-                      </div>
 
-                      <div class="form-group col-md-6">
-                        <label for="subject">Disciplina</label>
-                        <select id="subject" v-model="$v.nova_atividade.subject.$model" class="form-control">
-                          <option disabled value="">Escolha um item</option>
-                          <option v-for="subject in Subjects" v-bind:value="subject.nome">
-                            {{ subject.nome }}
-                          </option>
-                        </select>
-                        <span class="errorMessage" v-if="!$v.nova_atividade.subject.required">Campo Obrigatório !</span>
-                      </div>
-                    </div>
+                  <template>
+                    <h5>Cadastro de disciplinas</h5>
 
-                    <div class="form-group">
-                      <label for="ActivityTopics">Tópicos da Atividade</label>
-                      <textarea id="ActivityTopics" v-model="nova_atividade.topics" rows="4"
-                        placeholder="Descreva os tópicos dessa atividade" class="form-control"></textarea>
-                    </div>
+                    <form>
+                      <v-text-field v-model.trim="$v.nova_disciplina.nome.$model"
+                        hint="Informe o nome da disciplina. Por exemplo, matemática, história, etc" :counter="70"
+                        @blur="$v.nova_disciplina.nome.$touch()" @input="$v.nova_disciplina.nome.$touch()"
+                        :error-messages="nameDisciplinaErrors" required label="Disciplina" filled></v-text-field>
 
-                    <div class="form-buttons">
-                      <v-btn elevation="7" @click="cleanForm" large raised>Limpar Formulário</v-btn>
-                      <v-btn elevation="7" @click="createActivity($v)" large raised> Salvar</v-btn>
-                    </div>
-                  </form>
+                      <v-text-field v-model.trim="$v.nova_disciplina.tutor.$model" :error-messages="nameTutorErrors"
+                        @blur="$v.nova_disciplina.tutor.$touch()" @input="$v.nova_disciplina.tutor.$touch()"
+                        hint="Informe o nome do(a) professor(a)" :counter="70" label="Tutor" filled>
+                      </v-text-field>
 
-                  <v-snackbar v-model="snackbarAttrs.snackbar" :timeout="snackbarAttrs.timeout">
-                    {{ snackbarAttrs.text }}
-
-                    <template v-slot:action="{ attrs }">
-                      <v-btn color="blue" text v-bind="attrs" @click="snackbarAttrs.snackbar = false">
-                        Close
-                      </v-btn>
-                    </template>
-                  </v-snackbar>
-                </div>
-              </div>
-
-              <div class="tab-pane fade" id="pills-listAtividade" role="tabpanel"
-                aria-labelledby="pills-listAtividade-tab">
-                <div class="activity-content">
-                  <input type="text" id="filter" @input="getValue(filter)" v-model="filter"
-                    placeholder="Pesquise pela atividade cadastrada" class="form-control">
-
-                  <div class="warning-message" v-if="Activities.length == 0">
-                    <div class="warning-message-box">
                       <div>
-                        <h5>Nenhuma atividade encontrada !</h5>
-                        <p>Cadastre suas atividades agora</p>
+                        <v-btn elevation="7" @click="cleanFormDisciplina" large raised>Limpar</v-btn>
+
+                        <v-btn color="blue darken-2" @click="addDisciplina($v)" dark absolute right fab>
+                          <v-icon>fa-solid fa-check</v-icon>
+                        </v-btn>
                       </div>
+                    </form>
 
-                      <button type="button" @click="navegaParaForm" class="btn btn-success">Navegar para o
-                        Formulário</button>
-                    </div>
-                  </div>
+                    <v-snackbar v-model="snackbarAttrs.snackbar" :timeout="snackbarAttrs.timeout">
+                      {{ snackbarAttrs.text }}
 
-                  <template v-else>
+                      <template v-slot:action="{ attrs }">
+                        <v-btn color="blue" text v-bind="attrs" @click="snackbarAttrs.snackbar = false">
+                          Close
+                        </v-btn>
+                      </template>
+                    </v-snackbar>
+                  </template>
+                </div>
+
+                <div class="tab-pane fade" id="pills-listDisciplina" role="tabpanel"
+                  aria-labelledby="pills-listDisciplina-tab">
+                  <template>
                     <div class="card-list">
-                      <v-card elevation="24" v-for="(activity, id) in Activities" tile>
+                      <v-card elevation="8" v-for="(subject, id) in Subjects" tile>
                         <v-card-title>
                           <p>
-                            {{ activity.title }}
+                            {{ subject.nome }}
                           </p>
                         </v-card-title>
 
                         <v-card-subtitle>
-                          <p>{{ activity.subject }}</p>
+                          <p>{{ subject.tutor }}</p>
                         </v-card-subtitle>
 
                         <v-card-actions>
                           <div>
-                            <v-btn v-on:click="editActivity(id)" outlined rounded text>
+                            <v-btn v-on:click="editDisciplina(id)" outlined rounded text>
                               Editar
                             </v-btn>
 
-                            <v-btn v-on:click="deleteActivity(activity.key)" outlined rounded text>
+                            <v-btn v-on:click="deleteDisciplina(subject.docId)" outlined rounded text>
                               Remover
                             </v-btn>
                           </div>
-
-                          <v-spacer></v-spacer>
-
-                          <span class="subheading">{{ activity.date | formataData }}</span>
                         </v-card-actions>
                       </v-card>
                     </div>
@@ -355,72 +223,200 @@
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="tab-pane fade" id="nav-userData" role="tabpanel" aria-labelledby="nav-userData-tab">
-          <div class="user-dashboard">
-            <div class="user-data-box">
-              <div class="text-right">
-                <i @click="signOut" id="iconLogout" class="fa-solid fa-arrow-right-from-bracket"></i>
-              </div>
+          <div class="tab-pane fade" id="nav-atividades" role="tabpanel" aria-labelledby="nav-atividades-tab">
+            <div class="homepage-content">
+              <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" id="pills-formAtividade-tab" data-toggle="pill" href="#pills-formAtividade"
+                    role="tab" aria-controls="pills-formAtividade" aria-selected="true">Cadastro</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="pills-listAtividade-tab" data-toggle="pill" href="#pills-listAtividade"
+                    role="tab" aria-controls="pills-listAtividade" aria-selected="false">Minhas Atividades</a>
+                </li>
+              </ul>
+              <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-formAtividade" role="tabpanel"
+                  aria-labelledby="pills-formAtividade-tab">
 
-              <div class="row">
-                <div class="col-sm-4">
-                  <img v-bind:src="userInfo.imagePath" style="width:100%; border-radius: 100%;">
+                  <h5>Cadastro de Atividades</h5>
+                  <template>
+                    <form>
+                      <v-text-field filled label="Título" :error-messages="titleErrors"
+                        @input="$v.nova_atividade.title.$touch()" @blur="$v.nova_atividade.title.$touch()"
+                        v-model.trim="$v.nova_atividade.title.$model" hint="Informe o título da sua atividade"
+                        :counter="100" required>
+                      </v-text-field>
+                      <v-row>
+                        <v-col cols="12" sm="6">
+                          <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40"
+                            transition="scale-transition" offset-y min-width="auto">
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-text-field filled v-model="$v.nova_atividade.data_entrega.$model"
+                                @blur="$v.nova_atividade.data_entrega.$touch()" :error-messages="dateErrors"
+                                hint="Informe a data de entrega/realização dessa atividade"
+                                @input="$v.nova_atividade.data_entrega.$touch()" label="Data de entrega/realização"
+                                required prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+                            </template>
+                            <v-date-picker v-model="$v.nova_atividade.data_entrega.$model" @input="menu2 = false">
+                            </v-date-picker>
+                          </v-menu>
+                        </v-col>
+                        <v-col cols="12" sm="6">
+                          <v-select :items="items" v-model="$v.nova_atividade.subject.$model"
+                            :error-messages="selectErrors" required @change="$v.nova_atividade.subject.$touch()"
+                            @blur="$v.nova_atividade.subject.$touch()" filled label="Selecionar Disciplinas"></v-select>
+                        </v-col>
+                      </v-row>
+
+                      <v-textarea filled label="Tópicos da Atividade" v-model="nova_atividade.topics"
+                        hint="Informe os tópicos dessa atividade" :counter="200" auto-grow>
+                      </v-textarea>
+
+                      <div>
+                        <v-btn elevation="7" @click="cleanForm" large raised>Limpar</v-btn>
+
+                        <v-btn color="blue darken-2" @click="createActivity($v)" dark absolute right fab>
+                          <v-icon>fa-solid fa-check</v-icon>
+                        </v-btn>
+                      </div>
+                    </form>
+
+                    <v-snackbar v-model="snackbarAttrs.snackbar" :timeout="snackbarAttrs.timeout">
+                      {{ snackbarAttrs.text }}
+
+                      <template v-slot:action="{ attrs }">
+                        <v-btn color="blue" text v-bind="attrs" @click="snackbarAttrs.snackbar = false">
+                          Close
+                        </v-btn>
+                      </template>
+                    </v-snackbar>
+                  </template>
+
                 </div>
-                <div class="col-sm-8">
-                  <div v-for="(user, id) in userData" class="user-info">
-                    <div class="user-info-box">
-                      <h5>Nome</h5>
-                      <p>{{ user.nome }}</p>
+
+                <div class="tab-pane fade" id="pills-listAtividade" role="tabpanel"
+                  aria-labelledby="pills-listAtividade-tab">
+                  <div class="activity-content">
+                    <v-select v-model="vetFilterDisciplina" @input="getValue(vetFilterDisciplina)" :items="items"
+                      label="Filtro de atividades" filled multiple chips
+                      hint="Pesquise pela disciplina das atividades cadastradas" persistent-hint></v-select>
+
+                    <div class="warning-message" v-if="Activities.length == 0">
+                      <div class="warning-message-box">
+                        <div>
+                          <h5>Nenhuma atividade encontrada !</h5>
+                          <p>Cadastre suas atividades agora</p>
+                        </div>
+
+                        <button type="button" @click="navegaParaForm" class="btn btn-success">Navegar para o
+                          Formulário</button>
+                      </div>
                     </div>
-                    <div class="user-info-box">
-                      <h5>Email</h5>
-                      <p>{{ user.email }}</p>
-                    </div>
-                    <div class="user-info-box">
-                      <h5>Telefone</h5>
-                      <p>{{ user.phone }}</p>
-                    </div>
-                    <div class="user-info-box">
-                      <h5>Instituição de ensino</h5>
-                      <p>{{ user.school }}</p>
-                    </div>
-                    <div class="user-info-box">
-                      <h5>Série/Ano</h5>
-                      <p>{{ user.serie }}</p>
-                    </div>
+
+                    <template v-else>
+                      <div class="card-list">
+                        <v-card elevation="8" v-for="(activity, id) in Activities" tile>
+                          <v-card-title>
+                            <p>
+                              {{ activity.title }}
+                            </p>
+                          </v-card-title>
+
+                          <v-card-subtitle>
+                            <p>{{ activity.subject }}</p>
+                          </v-card-subtitle>
+
+                          <v-card-actions>
+                            <div>
+                              <v-btn v-on:click="editActivity(id)" outlined rounded text>
+                                Editar
+                              </v-btn>
+
+                              <v-btn v-on:click="deleteActivity(activity.key)" outlined rounded text>
+                                Remover
+                              </v-btn>
+                            </div>
+
+                            <v-spacer></v-spacer>
+
+                            <span class="subheading">{{ activity.date | formataData }}</span>
+                          </v-card-actions>
+                        </v-card>
+                      </div>
+                    </template>
                   </div>
                 </div>
               </div>
-
             </div>
+          </div>
 
-            <div class="user-data-box">
-              <h5>Informações adicionais</h5>
+          <div class="tab-pane fade" id="nav-userData" role="tabpanel" aria-labelledby="nav-userData-tab">
+            <div class="user-dashboard">
+              <div class="user-data-box">
+                <div class="text-right">
+                  <i @click="signOut" id="iconLogout" class="fa-solid fa-arrow-right-from-bracket"></i>
+                </div>
 
-              <form @submit.prevent="updateDadosUser">
-                <div class="form-group">
-                  <label for="phone">Telefone</label>
-                  <input type="tel" class="form-control" @input="isEmpty" v-model="editDadosUser.phone" id="phone"
-                    placeholder="Seu telefone">
+                <div class="row">
+                  <div class="col-sm-4">
+                    <img v-bind:src="userInfo.imagePath" style="width:100%; border-radius: 100%;">
+                  </div>
+                  <div class="col-sm-8">
+                    <div v-for="(user, id) in userData" class="user-info">
+                      <div class="user-info-box">
+                        <h5>Nome</h5>
+                        <p>{{ user.nome }}</p>
+                      </div>
+                      <div class="user-info-box">
+                        <h5>Email</h5>
+                        <p>{{ user.email }}</p>
+                      </div>
+                      <div class="user-info-box">
+                        <h5>Telefone</h5>
+                        <p>{{ user.phone }}</p>
+                      </div>
+                      <div class="user-info-box">
+                        <h5>Instituição de ensino</h5>
+                        <p>{{ user.school }}</p>
+                      </div>
+                      <div class="user-info-box">
+                        <h5>Série/Ano</h5>
+                        <p>{{ user.serie }}</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="school">Instituição/Escola</label>
-                  <input type="text" class="form-control" @input="isEmpty" v-model="editDadosUser.school" id="school"
-                    placeholder="Instituição de ensino">
-                </div>
-                <div class="form-group">
-                  <label for="serie">Série</label>
-                  <input type="text" class="form-control" @input="isEmpty" v-model="editDadosUser.serie" id="serie"
-                    placeholder="Série escolar">
-                </div>
-                <button type="submit" v-bind:disabled="isButtonDisabled" class="btn btn-dark">Salvar</button>
-              </form>
+
+              </div>
+
+              <div class="user-data-box">
+                <h5>Informações adicionais</h5>
+
+                <form @submit.prevent="updateDadosUser">
+                  <div class="form-group">
+                    <label for="phone">Telefone</label>
+                    <input type="tel" class="form-control" @input="isEmpty" v-model="editDadosUser.phone" id="phone"
+                      placeholder="Seu telefone">
+                  </div>
+                  <div class="form-group">
+                    <label for="school">Instituição/Escola</label>
+                    <input type="text" class="form-control" @input="isEmpty" v-model="editDadosUser.school" id="school"
+                      placeholder="Instituição de ensino">
+                  </div>
+                  <div class="form-group">
+                    <label for="serie">Série</label>
+                    <input type="text" class="form-control" @input="isEmpty" v-model="editDadosUser.serie" id="serie"
+                      placeholder="Série escolar">
+                  </div>
+                  <button type="submit" v-bind:disabled="isButtonDisabled" class="btn btn-dark">Salvar</button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </v-app>
     </div>
   </div>
 
